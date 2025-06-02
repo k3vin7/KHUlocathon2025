@@ -1,6 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import LocateButton from './LocateButton'; // 경로에 맞게 수정
 
 export default function MapContainer() {
+  const mapRef = useRef(null);
+  const [map, setMap] = useState(null);
+
   useEffect(() => {
     const isMobile = window.innerWidth <= 640;
     const script = document.createElement('script');
@@ -9,10 +13,13 @@ export default function MapContainer() {
     document.head.appendChild(script);
 
     script.onload = () => {
-      const map = new window.naver.maps.Map('map', {
+      const mapInstance = new window.naver.maps.Map('map', {
         center: new window.naver.maps.LatLng(37.2850, 127.0130),
         zoom: isMobile ? 16 : 17,
       });
+
+      mapRef.current = mapInstance;
+      setMap(mapInstance);
 
       const markerData = [
         { lat: 37.2860, lng: 127.0146, title: '행궁동 중심' },
@@ -23,11 +30,11 @@ export default function MapContainer() {
       markerData.forEach(({ lat, lng, title }) => {
         new window.naver.maps.Marker({
           position: new window.naver.maps.LatLng(lat, lng),
-          map,
+          map: mapInstance,
           icon: {
             url: '/marker.png',
-            size: new naver.maps.Size(40, 40),         // 표시 크기
-            scaledSize: new naver.maps.Size(40, 40),   // 실제 이미지 스케일도 맞춤
+            size: new naver.maps.Size(40, 40),
+            scaledSize: new naver.maps.Size(40, 40),
           },
           title,
         });
@@ -36,9 +43,9 @@ export default function MapContainer() {
   }, []);
 
   return (
-    <div
-      id="map"
-      className='h-[100dvh] w-screen'
-    />
+    <div className="relative w-screen h-[100dvh]">
+      <div id="map" className="w-full h-full" />
+      {map && <LocateButton map={map} />}
+    </div>
   );
 }

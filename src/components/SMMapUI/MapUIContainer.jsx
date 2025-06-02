@@ -11,7 +11,6 @@ export default function MapUIContainer() {
       top-0
       h-[44px] w-full
       bg-white z-10 shadow">
-        <img src={ logo } />
         <SearchHeader />
       </div>
       <div className="absolute top-[60px] left-0 w-full z-10 p-2">
