@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import MapContainer from './components/MapContainer';
-import MapUIContainer from './components/PCMapUI/MapUIContainer';
 import PCMapUIContainer from './components/PCMapUI/MapUIContainer'
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer'
 

@@ -4,15 +4,21 @@ import POIFilterTabs from "./POIFilterTabs"
 
 export default function MapUIContainer() {
   return (
-    <div className="
-    absolute
-    flex
-    top-0
-    h-[44px] w-full
-    bg-white z-10 shadow">
+    <div>
+      <div className="
+      absolute
+      flex
+      top-0
+      h-[44px] w-full
+      bg-white z-10 shadow">
         <img src={ logo } />
         <SearchHeader />
-        <POIFilterTabs /> 
+      </div>
+      <div className="absolute top-[60px] left-0 w-full z-10 p-2">
+        <POIFilterTabs />
+      </div>
+
     </div>
+
   );
 }
