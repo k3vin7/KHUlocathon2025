@@ -4,8 +4,11 @@ import LocateButton from './LocateButton'; // 위치 초기화 버튼
 export default function MapContainer() {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
-  const [selectedPlace, setSelectedPlace] = useState(null); // 사이드 패널용
-  const [openInfoWindow, setOpenInfoWindow] = useState(null); // InfoWindow 추적용
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [openInfoWindow, setOpenInfoWindow] = useState(null);
+  const [lastClickedMarkerId, setLastClickedMarkerId] = useState(null);
+  const [showMyPage, setShowMyPage] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const isMobile = window.innerWidth <= 640;
@@ -24,15 +27,12 @@ export default function MapContainer() {
       setMap(mapInstance);
 
       try {
-        const res = await fetch('http://localhost:5000/places'); // 전체 장소 목록
+        const res = await fetch('http://localhost:5000/places');
         const places = await res.json();
 
         places.forEach((place) => {
           const marker = new window.naver.maps.Marker({
-            position: new window.naver.maps.LatLng(
-              place.coordinates.lat,
-              place.coordinates.lng
-            ),
+            position: new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng),
             map: mapInstance,
             icon: {
               url: '/marker.png',
@@ -43,13 +43,7 @@ export default function MapContainer() {
           });
 
           const infoWindow = new window.naver.maps.InfoWindow({
-            content: `
-              <div style="padding:8px;min-width:150px;">
-                <b>${place.name}</b><br/>
-                ${place.description ?? ''}<br/>
-                <small>${place.address ?? ''}</small>
-              </div>
-            `,
+            content: `<div style="padding:8px;min-width:150px;"><b>${place.name}</b><br/>${place.description ?? ''}<br/><small>${place.address ?? ''}</small></div>`
           });
 
           window.naver.maps.Event.addListener(marker, 'click', async () => {
@@ -57,7 +51,6 @@ export default function MapContainer() {
             infoWindow.open(mapInstance, marker);
             setOpenInfoWindow(infoWindow);
 
-            // 같은 마커를 다시 누르면 토글로 패널 닫기
             if (selectedPlace && selectedPlace._id === place._id) {
               setSelectedPlace(null);
               return;
@@ -78,28 +71,85 @@ export default function MapContainer() {
     };
   }, []);
 
+  const handleMyPageClick = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/auth/me', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await res.json();
+      setUserData(data);
+      setShowMyPage(true);
+    } catch (err) {
+      console.error('사용자 정보 불러오기 실패:', err);
+    }
+  };
+
   return (
     <div className="relative w-screen h-[100dvh]">
       <div id="map" className="w-full h-full" />
       {map && <LocateButton map={map} />}
+
+      <button
+        onClick={handleMyPageClick}
+        className="absolute top-4 right-4 bg-white rounded-full p-2 shadow z-30"
+      >
+        🧑
+      </button>
+
       {selectedPlace && (
-        <div className="absolute top-0 right-0 w-64 h-full bg-white shadow-lg p-4 overflow-y-auto z-10">
-          <h2 className="text-xl font-bold mb-2">{selectedPlace.name}</h2>
-          <p className="text-sm text-gray-600">{selectedPlace.address}</p>
-          <p className="text-sm mt-2">{selectedPlace.description}</p>
+        <div className="absolute bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4 z-20 transition-all">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="text-lg font-bold">{selectedPlace.name}</h3>
+              <p className="text-xs text-gray-400 mt-1">카테고리/분류</p>
+            </div>
+            <button
+              onClick={() => {
+                setSelectedPlace(null);
+                if (openInfoWindow) openInfoWindow.close();
+                setOpenInfoWindow(null);
+              }}
+              className="text-gray-500 hover:text-black text-xl"
+            >
+              ✕
+            </button>
+          </div>
+
+          <p className="mt-3 text-sm">{selectedPlace.description}</p>
+
+          <div className="text-xs text-gray-500 mt-4">
+            <p className="mb-1"><b>영업시간</b>: 10:00 - 21:00</p>
+            <p className="mb-1">테라스 동반 가능</p>
+            <p className="mb-1">견종 크기 제한 없음</p>
+          </div>
+
           {selectedPlace.photoUrl && (
             <img
               src={selectedPlace.photoUrl}
-              alt={selectedPlace.name}
-              className="mt-2 w-full h-auto rounded"
+              alt="대표 이미지"
+              className="w-full h-48 object-cover rounded-md mt-4"
             />
           )}
-          <button
-            onClick={() => setSelectedPlace(null)}
-            className="absolute top-2 right-2 text-gray-500 hover:text-black"
-          >
-            ✕
-          </button>
+        </div>
+      )}
+
+      {showMyPage && userData && (
+        <div className="absolute top-0 right-0 w-64 h-full bg-white shadow-lg p-4 overflow-y-auto z-30 transition-all">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">마이페이지</h2>
+            <button
+              onClick={() => setShowMyPage(false)}
+              className="text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="mt-4 text-sm"><b>닉네임</b>: {userData.nickname}</p>
+          <p className="text-sm"><b>이메일</b>: {userData.email}</p>
+          <p className="text-sm"><b>가입일</b>: {new Date(userData.createdAt).toLocaleDateString()}</p>
+          <p className="text-sm"><b>칭호</b>: {userData.title}</p>
         </div>
       )}
     </div>
