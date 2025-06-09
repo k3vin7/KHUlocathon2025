@@ -11,6 +11,39 @@ export default function MapContainer() {
   const [showMyPage, setShowMyPage] = useState(false);
   const [userData, setUserData] = useState(null);
   const [showLogin, setShowLogin] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState('');
+
+  const fetchReviews = async (placeId) => {
+    try {
+      const res = await fetch(`http://localhost:5000/places/${placeId}/reviews`);
+      const data = await res.json();
+      setReviews(data);
+    } catch (err) {
+      console.error('리뷰 불러오기 실패:', err);
+    }
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!newReview.trim()) return;
+    try {
+      const res = await fetch(`http://localhost:5000/places/${selectedPlace._id}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ content: newReview }),
+      });
+      if (!res.ok) throw new Error();
+      setNewReview('');
+      fetchReviews(selectedPlace._id);
+    } catch (err) {
+      alert('리뷰 작성 실패');
+    }
+  };
 
   useEffect(() => {
     if (showLogin) return;
@@ -57,6 +90,7 @@ export default function MapContainer() {
 
             if (selectedPlace && selectedPlace._id === place._id) {
               setSelectedPlace(null);
+              setIsExpanded(false);
               return;
             }
 
@@ -64,6 +98,8 @@ export default function MapContainer() {
               const res = await fetch(`http://localhost:5000/places/${place._id}`);
               const detailedPlace = await res.json();
               setSelectedPlace(detailedPlace);
+              setIsExpanded(false);
+              fetchReviews(place._id);
             } catch (err) {
               console.error('장소 상세 정보를 불러오는 중 오류:', err);
             }
@@ -107,7 +143,19 @@ export default function MapContainer() {
       </button>
 
       {selectedPlace && (
-        <div className="absolute bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4 z-20 transition-all">
+        <div
+          className={`
+            absolute bottom-0 left-0 w-full bg-white 
+            rounded-t-2xl p-4 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
+            transition-all duration-300 ease-in-out
+            ${isExpanded ? 'h-[80dvh]' : 'h-[35dvh]'}
+          `}
+        >
+          <div
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="w-12 h-1 bg-gray-400 rounded-full mx-auto mb-2 cursor-pointer"
+          />
+
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-lg font-bold">{selectedPlace.name}</h3>
@@ -116,6 +164,7 @@ export default function MapContainer() {
             <button
               onClick={() => {
                 setSelectedPlace(null);
+                setIsExpanded(false);
                 if (openInfoWindow) openInfoWindow.close();
                 setOpenInfoWindow(null);
               }}
@@ -127,18 +176,44 @@ export default function MapContainer() {
 
           <p className="mt-3 text-sm">{selectedPlace.description}</p>
 
-          <div className="text-xs text-gray-500 mt-4">
-            <p className="mb-1"><b>영업시간</b>: 10:00 - 21:00</p>
-            <p className="mb-1">테라스 동반 가능</p>
-            <p className="mb-1">견종 크기 제한 없음</p>
-          </div>
-
           {selectedPlace.photoUrl && (
             <img
               src={selectedPlace.photoUrl}
               alt="대표 이미지"
               className="w-full h-48 object-cover rounded-md mt-4"
             />
+          )}
+
+          {isExpanded && (
+            <div className="mt-4">
+              <h4 className="text-sm font-semibold mb-1">✍️ 리뷰 작성</h4>
+              <textarea
+                rows={3}
+                className="w-full border rounded-md p-2 text-sm"
+                placeholder="이 장소에 대해 어떤 생각을 하시나요?"
+                value={newReview}
+                onChange={(e) => setNewReview(e.target.value)}
+              />
+              <button
+                onClick={handleReviewSubmit}
+                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                제출
+              </button>
+
+              <div className="mt-4 space-y-2 max-h-40 overflow-y-auto">
+                {reviews.length === 0 ? (
+                  <p className="text-sm text-gray-400">리뷰가 없습니다.</p>
+                ) : (
+                  reviews.map((r) => (
+                    <div key={r._id} className="border-b pb-2">
+                      <p className="text-sm"><b>{r.author}</b> · {new Date(r.createdAt).toLocaleDateString()}</p>
+                      <p className="text-sm mt-1">{r.content}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -156,7 +231,7 @@ export default function MapContainer() {
           </div>
           <p className="mt-4">👤 <b>{userData.nickname}</b></p>
           <p className="text-sm text-gray-500">{userData.email}</p>
-          <p className="mt-2 text-sm">🎖️ 칭호: {userData.title}</p>
+          <p className="mt-2 text-sm">🎖️ 친호: {userData.title}</p>
           <p className="mt-2 text-sm">🕓 가입일: {new Date(userData.createdAt).toLocaleDateString()}</p>
         </div>
       )}
