@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function LoginPage({ onLoginSuccess }) {
+export default function LoginPage({ onLoginSuccess, onClose }) {
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,6 +44,13 @@ export default function LoginPage({ onLoginSuccess }) {
 
   return (
     <div className="absolute inset-0 bg-white z-50 flex flex-col justify-center items-center p-6">
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl"
+      >
+        ✕
+      </button>
+
       <h2 className="text-xl font-bold mb-4">
         {isRegister ? '회원가입' : '로그인'}
       </h2>

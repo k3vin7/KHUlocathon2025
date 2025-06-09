@@ -4,29 +4,59 @@ import PCMapUIContainer from './components/PCMapUI/MapUIContainer';
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer';
 import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
+import MyPage from './components/MyPage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(true); // 🔥 앱 시작 시 true
+  const [showLogin, setShowLogin] = useState(false);
+  const [showMyPage, setShowMyPage] = useState(false);
+  const [userData, setUserData] = useState(null);
 
-  // 로그인 이후 2초간 로딩화면을 보여주는 트리거
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  // ✅ 앱 시작 시 로딩 2초 표시
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ✅ 로그인 성공 시 처리
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    setShowLoading(true); // ✅ 먼저 true 설정해서 LoadingPage 렌더링 유도
+    setShowLogin(false);
+    setShowMyPage(false);
   };
 
-  // ✅ showLoading이 true로 바뀐 후 2초 뒤에 false로 바꾸는 타이머
-  useEffect(() => {
-    if (showLoading) {
-      const timer = setTimeout(() => {
-        setShowLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [showLoading]);
+  // ✅ 로그아웃 처리
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setShowMyPage(false);
+    setUserData(null);
+  };
 
-  // 디바이스 판단
+  // ✅ 마이페이지 열릴 때 사용자 정보 fetch
+  useEffect(() => {
+    if (!showMyPage) return;
+
+    fetch(`${API_URL}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setUserData(data))
+      .catch((err) => {
+        console.error('사용자 정보 불러오기 실패:', err);
+        handleLogout();
+      });
+  }, [showMyPage]);
+
+  // ✅ 반응형 감지
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -36,13 +66,43 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (!isLoggedIn) return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  // ✅ 로딩 화면만 표시 (앱 전체 차단)
   if (showLoading) return <LoadingPage />;
 
+  // ✅ 로그인 창
+  if (showLogin)
+    return (
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        onClose={() => setShowLogin(false)}
+      />
+    );
+
+  // ✅ 본 앱 UI
   return (
     <div>
-      {isMobile ? <SMMapUIContainer /> : <PCMapUIContainer />}
+      {isMobile ? (
+        <SMMapUIContainer
+          isLoggedIn={isLoggedIn}
+          onLoginClick={() => setShowLogin(true)}
+          onMyPageClick={() => setShowMyPage(true)}
+        />
+      ) : (
+        <PCMapUIContainer
+          isLoggedIn={isLoggedIn}
+          onLoginClick={() => setShowLogin(true)}
+          onMyPageClick={() => setShowMyPage(true)}
+        />
+      )}
+
       <MapContainer />
+
+      <MyPage
+        visible={showMyPage}
+        onClose={() => setShowMyPage(false)}
+        onLogout={handleLogout}
+        userData={userData}
+      />
     </div>
   );
 }

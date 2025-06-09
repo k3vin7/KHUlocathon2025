@@ -24,7 +24,7 @@ export default function LocateButton({ map }) {
   return (
     <button
       onClick={moveToCurrentLocation}
-      className="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow flex items-center justify-center z-50"
+      className="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow flex items-center justify-center z-40"
     >
       <img src={ nowloc } alt="현위치" className="w-6 h-6" />
     </button>
