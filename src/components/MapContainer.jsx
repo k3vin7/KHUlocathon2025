@@ -7,7 +7,6 @@ export default function MapContainer() {
   const [map, setMap] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [openInfoWindow, setOpenInfoWindow] = useState(null);
-  const [lastClickedMarkerId, setLastClickedMarkerId] = useState(null);
   const [showMyPage, setShowMyPage] = useState(false);
   const [userData, setUserData] = useState(null);
   const [showLogin, setShowLogin] = useState(true);
@@ -20,7 +19,8 @@ export default function MapContainer() {
     try {
       const res = await fetch(`http://localhost:5000/places/${placeId}/reviews`);
       const data = await res.json();
-      setReviews(data);
+      if (Array.isArray(data)) setReviews(data);
+      else setReviews([]);
     } catch (err) {
       console.error('리뷰 불러오기 실패:', err);
     }
@@ -218,23 +218,32 @@ export default function MapContainer() {
         </div>
       )}
 
-      {showMyPage && userData && (
-        <div className="absolute top-0 right-0 w-64 h-full bg-white shadow-lg p-4 overflow-y-auto z-30 transition-all">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold">마이페이지</h2>
-            <button
-              onClick={() => setShowMyPage(false)}
-              className="text-gray-500 hover:text-black"
-            >
-              ✕
-            </button>
-          </div>
-          <p className="mt-4">👤 <b>{userData.nickname}</b></p>
-          <p className="text-sm text-gray-500">{userData.email}</p>
-          <p className="mt-2 text-sm">🎖️ 친호: {userData.title}</p>
-          <p className="mt-2 text-sm">🕓 가입일: {new Date(userData.createdAt).toLocaleDateString()}</p>
-        </div>
-      )}
+      {/* 마이페이지 */}
+      <div
+        className={`
+          fixed top-0 right-0 w-64 h-full bg-white shadow-lg p-4 overflow-y-auto z-30
+          transform transition-transform duration-300 ease-in-out
+          ${showMyPage ? 'translate-x-0' : 'translate-x-full'}
+        `}
+      >
+        {userData && (
+          <>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">마이페이지</h2>
+              <button
+                onClick={() => setShowMyPage(false)}
+                className="text-gray-500 hover:text-black"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="mt-4">👤 <b>{userData.nickname}</b></p>
+            <p className="text-sm text-gray-500">{userData.email}</p>
+            <p className="mt-2 text-sm">🎖️ 칭호: {userData.title}</p>
+            <p className="mt-2 text-sm">🕓 가입일: {new Date(userData.createdAt).toLocaleDateString()}</p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
