@@ -3,11 +3,13 @@ import MapContainer from './components/MapContainer';
 import PCMapUIContainer from './components/PCMapUI/MapUIContainer';
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer';
 import LoadingPage from './components/LoadingPage';
+import LoginPage from './components/LoginPage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
-  const [ready, setReady] = useState(false); // 마운트 완료
-  const [showLoading, setShowLoading] = useState(true); // 로딩 화면 보임 여부
+  const [ready, setReady] = useState(false);           // 초기 렌더링 완료
+  const [showLoading, setShowLoading] = useState(false); // 로딩화면 보이기
+  const [isLoggedIn, setIsLoggedIn] = useState(false);  // 로그인 여부
 
   useEffect(() => {
     const handleResize = () => {
@@ -17,25 +19,23 @@ function App() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // 렌더링 완료를 의미하는 ready 플래그 설정
-    setReady(true);
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  // ready가 true가 되면 1초 후 로딩 종료
-  useEffect(() => {
-    if (ready) {
-      const timer = setTimeout(() => {
-        setShowLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [ready]);
+  // 로그인 성공 → 로딩화면 띄우기 → 메인화면 전환
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setShowLoading(true);
+    setTimeout(() => {
+      setShowLoading(false);
+      setReady(true);
+    }, 2000); // 로딩 페이지 2초 후 메인화면으로
+  };
 
-  if (showLoading) return <LoadingPage />;
+  if (!isLoggedIn) return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  if (showLoading || !ready) return <LoadingPage />;
 
   return (
     <div>

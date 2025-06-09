@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import LocateButton from './LocateButton'; // 위치 초기화 버튼
+import LocateButton from './LocateButton';
+import LoginPage from './LoginPage';
 
 export default function MapContainer() {
   const mapRef = useRef(null);
@@ -9,8 +10,11 @@ export default function MapContainer() {
   const [lastClickedMarkerId, setLastClickedMarkerId] = useState(null);
   const [showMyPage, setShowMyPage] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [showLogin, setShowLogin] = useState(true);
 
   useEffect(() => {
+    if (showLogin) return;
+
     const isMobile = window.innerWidth <= 640;
     const script = document.createElement('script');
     script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_KEY_ID}`;
@@ -69,7 +73,7 @@ export default function MapContainer() {
         console.error('장소 목록을 불러오는 중 오류:', err);
       }
     };
-  }, []);
+  }, [showLogin]);
 
   const handleMyPageClick = async () => {
     try {
@@ -85,6 +89,10 @@ export default function MapContainer() {
       console.error('사용자 정보 불러오기 실패:', err);
     }
   };
+
+  if (showLogin) {
+    return <LoginPage onLoginSuccess={() => setShowLogin(false)} />;
+  }
 
   return (
     <div className="relative w-screen h-[100dvh]">
@@ -146,10 +154,10 @@ export default function MapContainer() {
               ✕
             </button>
           </div>
-          <p className="mt-4 text-sm"><b>닉네임</b>: {userData.nickname}</p>
-          <p className="text-sm"><b>이메일</b>: {userData.email}</p>
-          <p className="text-sm"><b>가입일</b>: {new Date(userData.createdAt).toLocaleDateString()}</p>
-          <p className="text-sm"><b>칭호</b>: {userData.title}</p>
+          <p className="mt-4">👤 <b>{userData.nickname}</b></p>
+          <p className="text-sm text-gray-500">{userData.email}</p>
+          <p className="mt-2 text-sm">🎖️ 칭호: {userData.title}</p>
+          <p className="mt-2 text-sm">🕓 가입일: {new Date(userData.createdAt).toLocaleDateString()}</p>
         </div>
       )}
     </div>
