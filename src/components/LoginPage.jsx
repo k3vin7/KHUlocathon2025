@@ -6,40 +6,41 @@ export default function LoginPage({ onLoginSuccess }) {
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleAuth = async () => {
-  const url = isRegister
-    ? 'http://localhost:5000/auth/register'
-    : 'http://localhost:5000/auth/login';
+    const url = isRegister
+      ? `${API_URL}/auth/register`
+      : `${API_URL}/auth/login`;
 
-  const body = isRegister
-    ? { email, password, nickname }
-    : { email, password };
+    const body = isRegister
+      ? { email, password, nickname }
+      : { email, password };
 
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      onLoginSuccess(); // 로그인 성공 시 부모 컴포넌트에 알림
-    } else if (isRegister && data.message === '회원가입 성공') {
-      alert('회원가입이 완료되었습니다. 로그인 해주세요.');
-      setIsRegister(false); // 로그인 창으로 전환
-      setPassword('');
-      setNickname('');
-    } else {
-      alert(data.message || '인증 실패');
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        onLoginSuccess(); // 로그인 성공 시 부모 컴포넌트에 알림
+      } else if (isRegister && data.message === '회원가입 성공') {
+        alert('회원가입이 완료되었습니다. 로그인 해주세요.');
+        setIsRegister(false); // 로그인 창으로 전환
+        setPassword('');
+        setNickname('');
+      } else {
+        alert(data.message || '인증 실패');
+      }
+    } catch (err) {
+      console.error('인증 중 오류 발생:', err);
     }
-  } catch (err) {
-    console.error('인증 중 오류 발생:', err);
-  }
-};
-
+  };
 
   return (
     <div className="absolute inset-0 bg-white z-50 flex flex-col justify-center items-center p-6">

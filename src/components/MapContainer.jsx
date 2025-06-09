@@ -15,9 +15,11 @@ export default function MapContainer() {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState('');
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const fetchReviews = async (placeId) => {
     try {
-      const res = await fetch(`http://localhost:5000/places/${placeId}/reviews`);
+      const res = await fetch(`${API_URL}/places/${placeId}/reviews`);
       const data = await res.json();
       if (Array.isArray(data)) setReviews(data);
       else setReviews([]);
@@ -29,7 +31,7 @@ export default function MapContainer() {
   const handleReviewSubmit = async () => {
     if (!newReview.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/places/${selectedPlace._id}/reviews`, {
+      const res = await fetch(`${API_URL}/places/${selectedPlace._id}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +66,7 @@ export default function MapContainer() {
       setMap(mapInstance);
 
       try {
-        const res = await fetch('http://localhost:5000/places');
+        const res = await fetch(`${API_URL}/places`);
         const places = await res.json();
 
         places.forEach((place) => {
@@ -95,7 +97,7 @@ export default function MapContainer() {
             }
 
             try {
-              const res = await fetch(`http://localhost:5000/places/${place._id}`);
+              const res = await fetch(`${API_URL}/places/${place._id}`);
               const detailedPlace = await res.json();
               setSelectedPlace(detailedPlace);
               setIsExpanded(false);
@@ -113,7 +115,7 @@ export default function MapContainer() {
 
   const handleMyPageClick = async () => {
     try {
-      const res = await fetch('http://localhost:5000/auth/me', {
+      const res = await fetch(`${API_URL}/auth/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
