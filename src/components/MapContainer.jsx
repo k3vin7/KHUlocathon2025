@@ -34,6 +34,11 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
         const places = await res.json();
 
         places.forEach((place) => {
+          if (!place.coordinates || typeof place.coordinates.lat !== 'number' || typeof place.coordinates.lng !== 'number') {
+            console.warn(`Invalid coordinates for place: ${place.name || place._id}`);
+            return;
+          }
+
           const marker = new window.naver.maps.Marker({
             position: new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng),
             map: mapInstance,
@@ -46,7 +51,12 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
           });
 
           const infoWindow = new window.naver.maps.InfoWindow({
-            content: `<div style="padding:8px;min-width:150px;"><b>${place.name}</b><br/>${place.description ?? ''}<br/><small>${place.address ?? ''}</small></div>`
+            content: `
+              <div style="padding:8px;min-width:200px;line-height:1.4;">
+                <b>${place.name}</b><br/>
+                <span>${place.summary || place.detail || place.description || ''}</span><br/>
+                <small style="color:gray;">${place.address ?? ''}</small>
+              </div>`
           });
 
           window.naver.maps.Event.addListener(marker, 'click', async () => {
@@ -117,7 +127,9 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
           <div className="flex justify-between items-start">
             <div>
               <h3 className="text-lg font-bold">{selectedPlace.name}</h3>
-              <p className="text-xs text-gray-400 mt-1">카테고리/분류</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {selectedPlace.category || '카테고리 없음'}
+              </p>
             </div>
             <button
               onClick={() => {
@@ -132,7 +144,9 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
             </button>
           </div>
 
-          <p className="mt-3 text-sm">{selectedPlace.description}</p>
+          <p className="mt-3 text-sm">
+            {selectedPlace.summary || selectedPlace.detail || selectedPlace.description || '설명 없음'}
+          </p>
 
           {selectedPlace.photoUrl && (
             <img
@@ -143,7 +157,19 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
           )}
 
           {isExpanded && (
-            <Review placeId={selectedPlace._id} API_URL={API_URL} />
+            <div className="mt-4 space-y-1 text-sm">
+              {selectedPlace.hours && <p><b>운영 시간:</b> {selectedPlace.hours}</p>}
+              {selectedPlace.phone && <p><b>전화번호:</b> {selectedPlace.phone}</p>}
+              {selectedPlace.instagram && (
+                <p>
+                  <b>Instagram: </b>
+                  <a href={selectedPlace.instagram} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
+                    방문하기
+                  </a>
+                </p>
+              )}
+              <Review placeId={selectedPlace._id} API_URL={API_URL} />
+            </div>
           )}
         </div>
       )}
