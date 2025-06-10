@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import LocateButton from './LocateButton';
 import MyPage from './MyPage';
-import Review from './Review';
+import PlaceDetailPanel from './PlaceDetailPanel';
 
 export default function MapContainer({ showMyPage, setShowMyPage }) {
   const mapRef = useRef(null);
@@ -70,11 +70,13 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
               return;
             }
 
+            setSelectedPlace(place); // 기본 정보로 먼저 띄움
+            setIsExpanded(false);
+
             try {
               const res = await fetch(`${API_URL}/places/${place._id}`);
               const detailedPlace = await res.json();
               setSelectedPlace(detailedPlace);
-              setIsExpanded(false);
             } catch (err) {
               console.error('장소 상세 정보를 불러오는 중 오류:', err);
             }
@@ -112,66 +114,18 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
       {map && <LocateButton map={map} />}
 
       {selectedPlace && (
-        <div
-          className={`
-            absolute bottom-0 left-0 w-full bg-white 
-            rounded-t-2xl p-4 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
-            transition-all duration-300 ease-in-out
-            ${isExpanded ? 'h-[80dvh]' : 'h-[35dvh]'}
-          `}
-        >
-          <div
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-12 h-1 bg-gray-400 rounded-full mx-auto mb-2 cursor-pointer"
-          />
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-bold">{selectedPlace.name}</h3>
-              <p className="text-xs text-gray-400 mt-1">
-                {selectedPlace.category || '카테고리 없음'}
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setSelectedPlace(null);
-                setIsExpanded(false);
-                if (openInfoWindow) openInfoWindow.close();
-                setOpenInfoWindow(null);
-              }}
-              className="text-gray-500 hover:text-black text-xl"
-            >
-              ✕
-            </button>
-          </div>
-
-          <p className="mt-3 text-sm">
-            {selectedPlace.summary || selectedPlace.detail || selectedPlace.description || '설명 없음'}
-          </p>
-
-          {selectedPlace.photoUrl && (
-            <img
-              src={selectedPlace.photoUrl}
-              alt="대표 이미지"
-              className="w-full h-48 object-cover rounded-md mt-4"
-            />
-          )}
-
-          {isExpanded && (
-            <div className="mt-4 space-y-1 text-sm">
-              {selectedPlace.hours && <p><b>운영 시간:</b> {selectedPlace.hours}</p>}
-              {selectedPlace.phone && <p><b>전화번호:</b> {selectedPlace.phone}</p>}
-              {selectedPlace.instagram && (
-                <p>
-                  <b>Instagram: </b>
-                  <a href={selectedPlace.instagram} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
-                    방문하기
-                  </a>
-                </p>
-              )}
-              <Review placeId={selectedPlace._id} API_URL={API_URL} />
-            </div>
-          )}
-        </div>
+        <PlaceDetailPanel
+          place={selectedPlace}
+          isExpanded={isExpanded}
+          onClose={() => {
+            setSelectedPlace(null);
+            setIsExpanded(false);
+            if (openInfoWindow) openInfoWindow.close();
+            setOpenInfoWindow(null);
+          }}
+          onToggleExpand={() => setIsExpanded(!isExpanded)}
+          API_URL={API_URL}
+        />
       )}
 
       <MyPage
