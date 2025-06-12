@@ -45,7 +45,7 @@ export default function PlaceDetailPanel({
             <div>
               <h4 className="text-base font-semibold mb-1">소개</h4>
               <p className="text-gray-700">
-                {place.summary || place.detail || place.description}
+                {place.detail}
               </p>
             </div>
           )}
