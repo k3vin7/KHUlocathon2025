@@ -46,7 +46,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out
         z-50
-        ${isExpanded ? 'h-[50dvh]' : 'h-[5dvh]'}`}
+        ${isExpanded ? 'h-[50dvh]' : 'h-[5dvh] overflow-y-auto'}`}
     >
       <div
         onClick={onToggleExpand}

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 export default function MyPage({ userData, onLogout }) {
-  if (!userData) return <p className="p-4 text-gray-500">사용자 정보를 불러오는 중입니다...</p>;
+  if (!userData) return <p className="p-4 text-gray-500"></p>;
 
   // 칭호별 뱃지 이미지 매핑
   const badgeMap = {

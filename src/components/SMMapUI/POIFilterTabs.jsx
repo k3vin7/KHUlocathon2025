@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const categories = ['전체', '음식점', '카페', '편의점', '병원', '약국']
+const categories = ['전체', '음식점', '카페', '상점', '주점']
 
 export default function POIFilterTabs() {
   const [selected, setSelected] = useState('전체')

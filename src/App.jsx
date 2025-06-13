@@ -18,7 +18,7 @@ function App() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowLoading(false), 1000);
+    const timer = setTimeout(() => setShowLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 

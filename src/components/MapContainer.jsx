@@ -22,7 +22,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
     script.onload = async () => {
       const mapInstance = new window.naver.maps.Map('map', {
         center: new window.naver.maps.LatLng(37.2850, 127.0130),
-        zoom: isMobile ? 16 : 17,
+        zoom: isMobile ? 16 : 18
       });
 
       mapRef.current = mapInstance;
