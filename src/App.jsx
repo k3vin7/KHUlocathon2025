@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import MapContainer from './components/MapContainer';
 import PCMapUIContainer from './components/PCMapUI/MapUIContainer';
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer';
 import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
 import MyPage from './components/MyPage';
+import ArchivePage from './components/ArchivePage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
-  const [showLoading, setShowLoading] = useState(true); // 🔥 앱 시작 시 true
+  const [showLoading, setShowLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
   const [showMyPage, setShowMyPage] = useState(false);
   const [userData, setUserData] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // ✅ 앱 시작 시 로딩 2초 표시
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoading(false);
@@ -24,14 +25,12 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // ✅ 로그인 성공 시 처리
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setShowLogin(false);
     setShowMyPage(false);
   };
 
-  // ✅ 로그아웃 처리
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
@@ -39,7 +38,6 @@ function App() {
     setUserData(null);
   };
 
-  // ✅ 마이페이지 열릴 때 사용자 정보 fetch
   useEffect(() => {
     if (!showMyPage) return;
 
@@ -56,7 +54,6 @@ function App() {
       });
   }, [showMyPage]);
 
-  // ✅ 반응형 감지
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -66,10 +63,8 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // ✅ 로딩 화면만 표시 (앱 전체 차단)
   if (showLoading) return <LoadingPage />;
 
-  // ✅ 로그인 창
   if (showLogin)
     return (
       <LoginPage
@@ -78,32 +73,42 @@ function App() {
       />
     );
 
-  // ✅ 본 앱 UI
   return (
-    <div>
-      {isMobile ? (
-        <SMMapUIContainer
-          isLoggedIn={isLoggedIn}
-          onLoginClick={() => setShowLogin(true)}
-          onMyPageClick={() => setShowMyPage(true)}
-        />
-      ) : (
-        <PCMapUIContainer
-          isLoggedIn={isLoggedIn}
-          onLoginClick={() => setShowLogin(true)}
-          onMyPageClick={() => setShowMyPage(true)}
-        />
-      )}
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              {isMobile ? (
+                <SMMapUIContainer
+                  isLoggedIn={isLoggedIn}
+                  onLoginClick={() => setShowLogin(true)}
+                  onMyPageClick={() => setShowMyPage(true)}
+                />
+              ) : (
+                <PCMapUIContainer
+                  isLoggedIn={isLoggedIn}
+                  onLoginClick={() => setShowLogin(true)}
+                  onMyPageClick={() => setShowMyPage(true)}
+                />
+              )}
 
-      <MapContainer />
+              <MapContainer />
 
-      <MyPage
-        visible={showMyPage}
-        onClose={() => setShowMyPage(false)}
-        onLogout={handleLogout}
-        userData={userData}
-      />
-    </div>
+              <MyPage
+                visible={showMyPage}
+                onClose={() => setShowMyPage(false)}
+                onLogout={handleLogout}
+                userData={userData}
+              />
+            </div>
+          }
+        />
+
+        <Route path="/archive" element={<ArchivePage />} />
+      </Routes>
+    </Router>
   );
 }
 
