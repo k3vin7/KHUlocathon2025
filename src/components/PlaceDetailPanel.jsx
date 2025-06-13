@@ -4,13 +4,6 @@ import { SiNaver } from 'react-icons/si';
 import Review from './Review';
 
 export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleExpand, API_URL }) {
-  const defaultImages = [
-    '/default-image1.jpg',
-    '/default-image2.jpg',
-    '/default-image3.jpg',
-    '/default-image4.jpg'
-  ];
-
   const [archives, setArchives] = useState([]);
   const [photoUrl, setPhotoUrl] = useState('');
 
@@ -49,12 +42,10 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
 
   return (
     <div
-      className={`
-        absolute bottom-0 left-0 w-full bg-white 
+      className={`absolute bottom-0 left-0 w-full bg-white 
         rounded-t-2xl z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out
-        ${isExpanded ? 'h-[50dvh]' : 'h-[5dvh]'}
-      `}
+        ${isExpanded ? 'h-[50dvh]' : 'h-[5dvh]'}`}
     >
       <div
         onClick={onToggleExpand}
@@ -81,14 +72,19 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
             <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
               <div>
                 <h4 className="font-semibold mb-1">영업 정보</h4>
-                <p className="whitespace-pre-wrap text-gray-700">{' ' + place.hours?.replaceAll(';', '\n')}</p>
+                <p className="whitespace-pre-wrap text-gray-700">
+                  {' ' + place.hours?.replaceAll(';', '\n')}
+                </p>
               </div>
               <div>
                 <h4 className="font-semibold mb-1">애견 관련 정보</h4>
-                <p className="whitespace-pre-wrap text-gray-700">{' ' + place.detail?.replaceAll('.', '\n')}</p>
+                <p className="whitespace-pre-wrap text-gray-700">
+                  {' ' + place.detail?.replaceAll('.', '\n')}
+                </p>
               </div>
             </div>
 
+            {/* 외부 링크 */}
             <div className="flex gap-3">
               <a
                 href={place.naverUrl}
@@ -112,17 +108,19 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
               )}
             </div>
 
+            {/* 장소 사진 (place.photos 기반) */}
             <div className="flex gap-3 mt-2 overflow-x-auto">
-              {defaultImages.map((url, i) => (
+              {(place.photos && place.photos.length > 0 ? place.photos : ['/default.jpg']).map((url, i) => (
                 <img
                   key={i}
                   src={url}
-                  alt={`기본 이미지 ${i + 1}`}
+                  alt={`장소 이미지 ${i + 1}`}
                   className="w-40 h-40 object-cover rounded-md flex-shrink-0"
                 />
               ))}
             </div>
 
+            {/* 아카이브 섹션 */}
             <div>
               <h4 className="text-base font-semibold mt-4">댕궁동 아카이브</h4>
               <p className="text-sm text-gray-600 mt-1 mb-2">
@@ -157,6 +155,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
               </div>
             </div>
 
+            {/* 리뷰 섹션 */}
             <Review placeId={place._id} API_URL={API_URL} />
           </div>
         )}
