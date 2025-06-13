@@ -3,13 +3,12 @@ import LocateButton from './LocateButton';
 import MyPage from './MyPage';
 import PlaceDetailPanel from './PlaceDetailPanel';
 
-export default function MapContainer({ showMyPage, setShowMyPage }) {
+export default function MapContainer({ showMyPage, setShowMyPage, userData, onLogout }) {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const [openInfoWindow, setOpenInfoWindow] = useState(null);
-  const [userData, setUserData] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const markersRef = useRef([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -29,18 +28,47 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
       mapRef.current = mapInstance;
       setMap(mapInstance);
 
+      window.naver.maps.Event.addListener(mapInstance, 'click', () => {
+        setSelectedPlace(null);
+        setIsExpanded(false);
+      });
+
+      class CustomOverlay extends window.naver.maps.OverlayView {
+        constructor(position, content) {
+          super();
+          this.position = position;
+          this._element = content;
+        }
+        onAdd() {
+          const pane = this.getPanes().overlayLayer;
+          pane.appendChild(this._element);
+        }
+        draw() {
+          const projection = this.getProjection();
+          const point = projection.fromCoordToOffset(this.position);
+          if (!point) return;
+          this._element.style.position = 'absolute';
+          this._element.style.left = `${point.x - this._element.offsetWidth / 2}px`;
+          this._element.style.top = `${point.y - this._element.offsetHeight}px`;
+        }
+        onRemove() {
+          if (this._element && this._element.parentNode) {
+            this._element.parentNode.removeChild(this._element);
+          }
+        }
+      }
+
       try {
         const res = await fetch(`${API_URL}/places`);
         const places = await res.json();
 
         places.forEach((place) => {
-          if (!place.coordinates || typeof place.coordinates.lat !== 'number' || typeof place.coordinates.lng !== 'number') {
-            console.warn(`Invalid coordinates for place: ${place.name || place._id}`);
-            return;
-          }
+          if (!place.coordinates || typeof place.coordinates.lat !== 'number' || typeof place.coordinates.lng !== 'number') return;
+
+          const latLng = new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
 
           const marker = new window.naver.maps.Marker({
-            position: new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng),
+            position: latLng,
             map: mapInstance,
             icon: {
               url: '/marker.png',
@@ -50,63 +78,59 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
             title: place.name,
           });
 
-          const infoWindow = new window.naver.maps.InfoWindow({
-            content: `
-              <div style="padding:8px;min-width:200px;line-height:1.4;">
-                <b>${place.name}</b><br/>
-                <span>${place.summary || place.detail || place.description || ''}</span><br/>
-                <small style="color:gray;">${place.address ?? ''}</small>
-              </div>`
-          });
+          const overlayContent = document.createElement('div');
+          overlayContent.innerHTML = `
+            <div class="relative w-max max-w-[200px]">
+              <div class="bg-[#3C3C3C] text-white rounded-xl px-4 py-2 text-sm leading-relaxed shadow-md">
+                <div class="font-bold text-base">${place.name}</div>
+                <div>${place.summary || place.detail || '정보 없음'}</div>
+                <div class="text-xs text-gray-300">${place.address || ''}</div>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 
+                border-l-8 border-r-8 border-t-[10px] 
+                border-l-transparent border-r-transparent border-t-[#3C3C3C]"></div>
+            </div>
+          `;
 
-          window.naver.maps.Event.addListener(marker, 'click', async () => {
-            if (openInfoWindow) openInfoWindow.close();
-            infoWindow.open(mapInstance, marker);
-            setOpenInfoWindow(infoWindow);
+          const overlay = new CustomOverlay(latLng, overlayContent);
 
-            if (selectedPlace && selectedPlace._id === place._id) {
-              setSelectedPlace(null);
-              setIsExpanded(false);
-              return;
-            }
+          markersRef.current.push({ marker, overlay });
 
-            setSelectedPlace(place); // 기본 정보로 먼저 띄움
+          // 클릭 시 상세 정보
+          const showPlaceDetail = async () => {
+            setSelectedPlace(place);
             setIsExpanded(false);
-
             try {
               const res = await fetch(`${API_URL}/places/${place._id}`);
               const detailedPlace = await res.json();
               setSelectedPlace(detailedPlace);
             } catch (err) {
-              console.error('장소 상세 정보를 불러오는 중 오류:', err);
+              console.error('장소 상세 정보 오류:', err);
+            }
+          };
+
+          window.naver.maps.Event.addListener(marker, 'click', showPlaceDetail);
+          overlayContent.addEventListener('click', showPlaceDetail);
+        });
+
+        // 줌 변경에 따라 마커/말풍선 전환
+        window.naver.maps.Event.addListener(mapInstance, 'zoom_changed', () => {
+          const zoom = mapInstance.getZoom();
+          markersRef.current.forEach(({ marker, overlay }) => {
+            if (zoom >= 19) {
+              marker.setMap(null);
+              overlay.setMap(mapInstance);
+            } else {
+              overlay.setMap(null);
+              marker.setMap(mapInstance);
             }
           });
         });
       } catch (err) {
-        console.error('장소 목록을 불러오는 중 오류:', err);
+        console.error('장소 목록 오류:', err);
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (!showMyPage) return;
-
-    const fetchUserData = async () => {
-      try {
-        const res = await fetch(`${API_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const data = await res.json();
-        setUserData(data);
-      } catch (err) {
-        console.error('사용자 정보 불러오기 실패:', err);
-      }
-    };
-
-    fetchUserData();
-  }, [showMyPage]);
 
   return (
     <div className="relative w-screen h-[100dvh]">
@@ -120,8 +144,6 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
           onClose={() => {
             setSelectedPlace(null);
             setIsExpanded(false);
-            if (openInfoWindow) openInfoWindow.close();
-            setOpenInfoWindow(null);
           }}
           onToggleExpand={() => setIsExpanded(!isExpanded)}
           API_URL={API_URL}
@@ -131,6 +153,7 @@ export default function MapContainer({ showMyPage, setShowMyPage }) {
       <MyPage
         userData={userData}
         onClose={() => setShowMyPage(false)}
+        onLogout={onLogout}
         visible={showMyPage}
       />
     </div>

@@ -9,7 +9,7 @@ import MyPage from './components/MyPage';
 function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
-  const [showLoading, setShowLoading] = useState(true); // 🔥 앱 시작 시 true
+  const [showLoading, setShowLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
   const [showMyPage, setShowMyPage] = useState(false);
   const [userData, setUserData] = useState(null);
