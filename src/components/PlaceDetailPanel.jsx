@@ -1,14 +1,51 @@
+import { useEffect, useState } from 'react';
 import { FaInstagram } from 'react-icons/fa';
 import { SiNaver } from 'react-icons/si';
 import Review from './Review';
 
 export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleExpand, API_URL }) {
   const defaultImages = [
-  '/default-image1.jpg',
-  '/default-image2.jpg',
-  '/default-image3.jpg',
-  '/default-image4.jpg'
+    '/default-image1.jpg',
+    '/default-image2.jpg',
+    '/default-image3.jpg',
+    '/default-image4.jpg'
   ];
+
+  const [archives, setArchives] = useState([]);
+  const [photoUrl, setPhotoUrl] = useState('');
+
+  const fetchArchives = async () => {
+    try {
+      const res = await fetch(`${API_URL}/archives/place/${place._id}`);
+      const data = await res.json();
+      setArchives(data);
+    } catch (err) {
+      console.error('아카이빙 조회 실패:', err);
+    }
+  };
+
+  const handleArchiveSubmit = async () => {
+    if (!photoUrl.trim()) return alert('사진 URL을 입력해주세요.');
+    try {
+      const res = await fetch(`${API_URL}/archives`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ placeId: place._id, photoUrl }),
+      });
+      if (!res.ok) throw new Error('업로드 실패');
+      setPhotoUrl('');
+      fetchArchives();
+    } catch (err) {
+      console.error('아카이빙 업로드 실패:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (isExpanded) fetchArchives();
+  }, [isExpanded, place]);
 
   return (
     <div className={`
@@ -22,7 +59,6 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         className="w-12 h-1 bg-gray-400 rounded-full mx-auto mb-3 cursor-pointer"
       />
 
-      {/* 제목 및 카테고리 */}
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-xl font-bold">{place.name}</h3>
@@ -33,14 +69,12 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
 
       {isExpanded && (
         <div className="mt-3 space-y-5">
-          {/* 설명 */}
-          {(place.description) && (
+          {place.description && (
             <p className="text-gray-700 text-sm leading-relaxed">
               {place.description}
             </p>
           )}
 
-          {/* 기본 정보 그리드 */}
           <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
             <div>
               <h4 className="font-semibold mb-1">영업 정보</h4>
@@ -52,7 +86,6 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
             </div>
           </div>
 
-          {/* 링크 버튼 */}
           <div className="flex gap-3">
             <a
               href={place.naverUrl}
@@ -87,14 +120,41 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
             ))}
           </div>
 
-          {/* 리뷰 아카이브 */}
           <div>
             <h4 className="text-base font-semibold mt-4">댕궁동 아카이브</h4>
             <p className="text-sm text-gray-600 mt-1 mb-2">
               반려동물과 함께 방문한 사진을 업로드해보세요.
             </p>
-            <Review placeId={place._id} API_URL={API_URL} />
+
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                placeholder="사진 URL 입력"
+                value={photoUrl}
+                onChange={(e) => setPhotoUrl(e.target.value)}
+                className="flex-1 px-2 py-1 border rounded text-sm"
+              />
+              <button
+                onClick={handleArchiveSubmit}
+                className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+              >
+                업로드
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              {archives.map((a) => (
+                <img
+                  key={a._id}
+                  src={a.photoUrl}
+                  alt="아카이브 이미지"
+                  className="w-full h-32 object-cover rounded"
+                />
+              ))}
+            </div>
           </div>
+
+          <Review placeId={place._id} API_URL={API_URL} />
         </div>
       )}
     </div>
