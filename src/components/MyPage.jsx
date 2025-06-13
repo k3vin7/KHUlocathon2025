@@ -1,72 +1,86 @@
-export default function MyPage({ userData, visible, onClose, onLogout }) {
+import { useNavigate } from "react-router-dom";
+
+export default function MyPage({ userData, onLogout }) {
+  if (!userData) return <p className="p-4 text-gray-500">사용자 정보를 불러오는 중입니다...</p>;
+
+  // 칭호별 뱃지 이미지 매핑
+  const badgeMap = {
+    '👑댕궁동 마스터': '/마스터.png',
+    '🌟댕궁동 전문가': '/전문가.png',
+    '🗺️댕궁동 탐험가': '/탐험가.png',
+    '🐾댕궁동 입문자': '/입문자.png'
+  };
+
+  const navigate = useNavigate();
+
+  const Logout = () => {
+    onLogout();
+    navigate('/');
+  }
+
+  const badgeSrc = badgeMap[userData.title] || '/badges/default.png';
+
   return (
-    <div
-      className={`fixed top-0 right-0 w-80 h-full bg-white shadow-lg p-4 overflow-y-auto z-[9999]
-      transform transition-transform duration-300 ease-in-out
-      ${visible ? 'translate-x-0' : 'translate-x-full'}`}
-    >
-      {/* 헤더 */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">마이페이지</h2>
-        <button onClick={onClose} className="text-gray-500 hover:text-black text-xl">✕</button>
+    <div className="max-w-xl mx-auto p-6">
+      {/* 제목 */}
+      <h2 className="text-2xl font-bold mb-6">마이페이지</h2>
+
+      {/* 프로필 카드 */}
+      <div className="bg-gray-100 rounded-xl p-6 text-center shadow-sm">
+        {/* 프로필 이미지 */}
+        <div className="w-24 h-24 mx-auto rounded-full bg-white border mb-3 flex items-center justify-center text-gray-400 text-sm">
+          프로필
+        </div>
+
+        {/* 사용자 기본 정보 */}
+        <p className="text-xl font-semibold">{userData.nickname}</p>
+        <p className="text-sm text-gray-500">{userData.email}</p>
+
+        {/* 칭호 및 가입일 */}
+        <div className="mt-3 text-sm text-gray-800">
+          <p>
+            🏅 <b>칭호:</b> {userData.title || '없음'}
+          </p>
+          <p>
+            🕓 <b>가입일:</b> {new Date(userData.createdAt).toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
+        </div>
+
+        {/* 칭호 뱃지 이미지 */}
+        <div className="mt-4">
+          <img
+            src={badgeSrc}
+            alt="칭호 뱃지"
+            className="mx-auto w-32 h-32 object-contain"
+          />
+        </div>
       </div>
 
-      {!userData ? (
-        <p className="text-sm text-gray-400">로딩 중...</p>
-      ) : (
-        <>
-          {/* 프로필 카드 */}
-          <div className="bg-gray-100 rounded-xl p-4 text-center shadow-sm">
-            <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-2 bg-white shadow">
-              <img
-                src="/potato-icon.png"
-                alt="프로필"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <p className="font-semibold text-lg">{userData.nickname}</p>
-            <p className="text-sm text-gray-500">{userData.email}</p>
+      {/* 활동 요약 */}
+      <div className="mt-6 bg-gray-50 rounded-xl p-4 text-center">
+        <p className="text-sm font-semibold text-gray-700 mb-1">활동 요약</p>
+        <p className="text-green-600 text-lg font-bold">
+          {userData.stampCount ?? 0}개
+        </p>
+        <p className="text-sm text-gray-600">획득한 스탬프</p>
+      </div>
 
-            {/* 칭호 */}
-            <p className="mt-2 text-sm">🎖️ 칭호: {userData.title}</p>
-            {/* 가입일 */}
-            <p className="mt-1 text-sm text-gray-600">
-              🕓 가입일: {new Date(userData.createdAt).toLocaleDateString()}
-            </p>
-          </div>
-
-          {/* 요약 정보 */}
-          <div className="mt-6 bg-gray-50 rounded-xl p-4">
-            <h3 className="text-sm font-semibold mb-2 text-gray-700">활동 요약</h3>
-            <div className="grid grid-cols-2 text-center text-sm">
-              <div>
-                <p className="text-green-600 font-bold">{userData.stampCount ?? 0}개</p>
-                <p className="text-gray-600 text-xs">획득한 스탬프</p>
-              </div>
-              <div>
-                <p className="text-green-600 font-bold">2건</p>
-                <p className="text-gray-600 text-xs">참여 프로젝트</p>
-              </div>
-            </div>
-          </div>
-
-          {/* 버튼들 */}
-          <div className="mt-6 space-y-3">
-            <button className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded">
-              팀 프로젝트 찾아보기
-            </button>
-            <button className="w-full border border-gray-300 hover:bg-gray-100 py-2 rounded">
-              프로필 수정
-            </button>
-            <button
-              onClick={onLogout}
-              className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded"
-            >
-              로그아웃
-            </button>
-          </div>
-        </>
-      )}
+      {/* 버튼들 */}
+      <div className="mt-6 space-y-3">
+        <button className="w-full border border-gray-300 hover:bg-gray-100 py-2 rounded text-sm">
+          프로필 수정
+        </button>
+        <button
+          onClick={Logout}
+          className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded text-sm"
+        >
+          로그아웃
+        </button>
+      </div>
     </div>
   );
 }

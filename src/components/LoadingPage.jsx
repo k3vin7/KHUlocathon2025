@@ -1,14 +1,17 @@
-import logo from "../assets/logo.png"
+import FLogo from "../assets/FullLogo.png"
+import spinner from "../assets/spinner.gif"
 
 export default function LoadingPage() {
   return (
     <div className="
-    fixed inset-0
+    fixed
+    inset-0
     bg-white
-    flex flex-col
+    flex
     items-center justify-center z-50">
-      <img src={ logo } className="w-[30vw]"/>
-      <h1>산책 준비하는 중...</h1>
+        <img src={ FLogo } className="fixed h-[34vh]"/>
+        <img src={ spinner } className="fixed h-[55vh] w-[55vh]"/>
     </div>
   );
 }
+

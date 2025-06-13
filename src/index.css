@@ -9,3 +9,18 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
 }
+
+@font-face {
+  font-family: 'HSSanTokki';
+  src: url('/fonts/HSSanTokki.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body, #root {
+  background-color: white !important;
+  color-scheme: only light !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  -webkit-text-fill-color: initial !important;
+}

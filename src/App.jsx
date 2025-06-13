@@ -5,7 +5,7 @@ import PCMapUIContainer from './components/PCMapUI/MapUIContainer';
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer';
 import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
-import MyPage from './components/MyPage2';
+import MyPage from './components/MyPage';
 import ArchivePage from './components/ArchivePage';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowLoading(false), 2000);
+    const timer = setTimeout(() => setShowLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 

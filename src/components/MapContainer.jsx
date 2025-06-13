@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import LocateButton from './LocateButton';
-import MyPage from './MyPage2';
+import MyPage from './MyPage';
 import PlaceDetailPanel from './PlaceDetailPanel';
 
 export default function MapContainer({ showMyPage, setShowMyPage, userData, onLogout }) {
@@ -81,14 +81,17 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           const overlayContent = document.createElement('div');
           overlayContent.innerHTML = `
             <div class="relative w-max max-w-[200px]">
-              <div class="bg-[#3C3C3C] text-white rounded-xl px-4 py-2 text-sm leading-relaxed shadow-md">
+              <div class="
+              bg-[#2B1D18B2] text-white
+              rounded-xl px-4 py-2 text-sm leading-relaxed shadow-md">
                 <div class="font-bold text-base">${place.name}</div>
                 <div>${place.summary || place.detail || '정보 없음'}</div>
                 <div class="text-xs text-gray-300">${place.address || ''}</div>
               </div>
-              <div class="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0 
+              <div class="
+                absolute left-1/2 -translate-x-1/2 w-0 h-0 
                 border-l-8 border-r-8 border-t-[10px] 
-                border-l-transparent border-r-transparent border-t-[#3C3C3C]"></div>
+                border-l-transparent border-r-transparent border-t-[#2B1D18B2]"></div>
             </div>
           `;
 
@@ -99,7 +102,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           // 클릭 시 상세 정보
           const showPlaceDetail = async () => {
             setSelectedPlace(place);
-            setIsExpanded(false);
+            setIsExpanded(true);
             try {
               const res = await fetch(`${API_URL}/places/${place._id}`);
               const detailedPlace = await res.json();
