@@ -34,29 +34,28 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       {isExpanded && (
         <div className="mt-3 space-y-5">
           {/* 설명 */}
-          {(place.detail || place.summary || place.description) && (
+          {(place.description) && (
             <p className="text-gray-700 text-sm leading-relaxed">
-              {place.detail || place.summary}
+              {place.description}
             </p>
           )}
 
           {/* 기본 정보 그리드 */}
           <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
             <div>
-              <h4 className="font-semibold mb-1">영업 상태</h4>
-              <p className="whitespace-pre-wrap text-gray-700">{place.hours}</p>
+              <h4 className="font-semibold mb-1">영업 정보</h4>
+              <p className="whitespace-pre-wrap text-gray-700">{' ' + place.hours?.replaceAll(';', '\n')}</p>
             </div>
             <div>
-              <h4 className="font-semibold mb-1">테라스 유무 / 입장 제한 정보</h4>
-              <p className="text-gray-700">견종 크기</p>
-              <p className="text-gray-700">입장 제한 정보</p>
+              <h4 className="font-semibold mb-1">애견 관련 정보</h4>
+              <p className="whitespace-pre-wrap text-gray-700">{' ' + place.detail?.replaceAll('.', '\n')}</p>
             </div>
           </div>
 
           {/* 링크 버튼 */}
           <div className="flex gap-3">
             <a
-              href={`https://map.naver.com/v5/search/${place.name}`}
+              href={place.naverUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 px-3 py-1 border rounded-full text-sm text-gray-600 hover:bg-gray-100"
