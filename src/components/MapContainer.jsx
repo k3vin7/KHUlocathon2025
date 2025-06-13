@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import LocateButton from './LocateButton';
-import MyPage from './MyPage';
+import MyPage from './MyPage2';
 import PlaceDetailPanel from './PlaceDetailPanel';
 
 export default function MapContainer({ showMyPage, setShowMyPage }) {

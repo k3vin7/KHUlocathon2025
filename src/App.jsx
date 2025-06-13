@@ -5,7 +5,7 @@ import PCMapUIContainer from './components/PCMapUI/MapUIContainer';
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer';
 import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
-import MyPage from './components/MyPage';
+import MyPage from './components/MyPage2';
 import ArchivePage from './components/ArchivePage';
 
 function App() {
@@ -13,33 +13,28 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
   const [showLoading, setShowLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
-  const [showMyPage, setShowMyPage] = useState(false);
   const [userData, setUserData] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoading(false);
-    }, 2000);
+    const timer = setTimeout(() => setShowLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     setShowLogin(false);
-    setShowMyPage(false);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    setShowMyPage(false);
     setUserData(null);
   };
 
   useEffect(() => {
-    if (!showMyPage) return;
+    if (!isLoggedIn) return;
 
     fetch(`${API_URL}/auth/me`, {
       headers: {
@@ -52,7 +47,7 @@ function App() {
         console.error('사용자 정보 불러오기 실패:', err);
         handleLogout();
       });
-  }, [showMyPage]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,7 +59,6 @@ function App() {
   }, []);
 
   if (showLoading) return <LoadingPage />;
-
   if (showLogin)
     return (
       <LoginPage
@@ -84,28 +78,26 @@ function App() {
                 <SMMapUIContainer
                   isLoggedIn={isLoggedIn}
                   onLoginClick={() => setShowLogin(true)}
-                  onMyPageClick={() => setShowMyPage(true)}
                 />
               ) : (
                 <PCMapUIContainer
                   isLoggedIn={isLoggedIn}
                   onLoginClick={() => setShowLogin(true)}
-                  onMyPageClick={() => setShowMyPage(true)}
                 />
               )}
-
               <MapContainer />
-
-              <MyPage
-                visible={showMyPage}
-                onClose={() => setShowMyPage(false)}
-                onLogout={handleLogout}
-                userData={userData}
-              />
             </div>
           }
         />
-
+        <Route
+          path="/mypage"
+          element={
+            <MyPage
+              userData={userData}
+              onLogout={handleLogout}
+            />
+          }
+        />
         <Route path="/archive" element={<ArchivePage />} />
       </Routes>
     </Router>
