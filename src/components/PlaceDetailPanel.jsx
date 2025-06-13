@@ -3,7 +3,12 @@ import { SiNaver } from 'react-icons/si';
 import Review from './Review';
 
 export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleExpand, API_URL }) {
-  const defaultImage = '/default-image.jpg';
+  const defaultImages = [
+  '/default-image1.jpg',
+  '/default-image2.jpg',
+  '/default-image3.jpg',
+  '/default-image4.jpg'
+  ];
 
   return (
     <div className={`
@@ -72,14 +77,13 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
             )}
           </div>
 
-          {/* 대표 이미지 3장 */}
-          <div className="flex gap-2 mt-2 overflow-x-auto">
-            {[1, 2, 3].map((_, i) => (
+          <div className="flex gap-3 mt-2 overflow-x-auto">
+            {defaultImages.map((url, i) => (
               <img
                 key={i}
-                src={place.photoUrl || defaultImage}
-                alt={`대표 이미지 ${i + 1}`}
-                className="w-32 h-32 object-cover rounded-md flex-shrink-0"
+                src={url}
+                alt={`기본 이미지 ${i + 1}`}
+                className="w-40 h-40 object-cover rounded-md flex-shrink-0"
               />
             ))}
           </div>
