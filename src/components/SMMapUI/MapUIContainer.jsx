@@ -1,4 +1,5 @@
-import SearchHeader from "./SearchHeader";
+import MenuTabs from "./MenuTabs";
+import SearchHeader from "./MenuTabs";
 import POIFilterTabs from "./POIFilterTabs";
 import { useNavigate } from "react-router-dom";
 
@@ -16,8 +17,6 @@ export default function MapUIContainer({ isLoggedIn, onLoginClick, onMyPageClick
             font-santokki text-[#FF6100] text-[20px]">
               댕궁지도</h1>
           <div> 
-
-          <SearchHeader />
           {isLoggedIn ? (
             <button
               onClick={handleMyPageClick}
@@ -38,6 +37,9 @@ export default function MapUIContainer({ isLoggedIn, onLoginClick, onMyPageClick
 
       <div className="absolute top-[60px] left-0 w-full z-10 p-2">
         <POIFilterTabs />
+      </div>
+      <div className="absolute bottom-[20px] left-0 w-full z-50">
+        <MenuTabs />
       </div>
     </div>
   );
