@@ -16,7 +16,7 @@ export default function MapUIContainer({ isLoggedIn, onLoginClick }) {
           ) : (
             <button
               onClick={onLoginClick}
-              className="text-sm bg-blue-500 text-white px-3 py-1 rounded shadow"
+              className="text-sm bg-[#FF6100] text-white px-3 py-1 rounded shadow"
             >
               로그인
             </button>
@@ -27,7 +27,7 @@ export default function MapUIContainer({ isLoggedIn, onLoginClick }) {
       <div className="absolute top-[60px] left-0 w-full z-10 p-2">
         <POIFilterTabs />
       </div>
-      <MenuTabs />
+      <MenuTabs isLoggedIn={isLoggedIn}/>
     </div>
   );
 }
