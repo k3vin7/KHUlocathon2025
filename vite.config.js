@@ -13,9 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'], // optional
       manifest: {
-        name: '댕궁동 산책 앱',
-        short_name: '댕궁동',
-        description: '댕궁동에서 반려동물과 산책해요!',
+        name: '댕궁지도',
+        short_name: '댕궁지도',
+        description: '작은 발걸음도 함께하는, 행궁',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
