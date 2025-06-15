@@ -6,7 +6,7 @@ export default function Review({ placeId, API_URL }) {
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`${API_URL}/places/${placeId}/reviews`);
+      const res = await fetch(`${API_URL}/reviews/${placeId}/reviews`);
       const data = await res.json();
       if (Array.isArray(data)) setReviews(data);
       else setReviews([]);
@@ -18,7 +18,7 @@ export default function Review({ placeId, API_URL }) {
   const handleReviewSubmit = async () => {
     if (!newReview.trim()) return;
     try {
-      const res = await fetch(`${API_URL}/places/${placeId}/reviews`, {
+      const res = await fetch(`${API_URL}/reviews/${placeId}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
