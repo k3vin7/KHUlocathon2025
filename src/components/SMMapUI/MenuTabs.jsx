@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import HomeButton from "../../assets/HomeButton.png"
+import MyPageButton from "../../assets/MyPageButton.png"
 
 export default function MenuTabs() {
   const navigate = useNavigate();
@@ -23,8 +24,10 @@ export default function MenuTabs() {
           <p>아카이빙</p>
         </div>
 
-        <div>
-          <p>마이페이지</p>
+        <div onClick={() => { navigate('/mypage') }} className="
+        flex flex-col
+        items-center justify-center">
+            <img src = { MyPageButton } className="w-[5dvw]"/>
         </div>
       </div>
     </div>

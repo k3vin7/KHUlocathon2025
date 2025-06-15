@@ -2,12 +2,7 @@ import MenuTabs from "./MenuTabs";
 import POIFilterTabs from "./POIFilterTabs";
 import { useNavigate } from "react-router-dom";
 
-export default function MapUIContainer({ isLoggedIn, onLoginClick, onMyPageClick }) {
-  const navigate = useNavigate();
-  
-  const handleMyPageClick = () => {
-    navigate('/mypage');
-  };
+export default function MapUIContainer({ isLoggedIn, onLoginClick }) {
 
   return (
     <div>
@@ -17,12 +12,7 @@ export default function MapUIContainer({ isLoggedIn, onLoginClick, onMyPageClick
               댕궁지도</h1>
           <div> 
           {isLoggedIn ? (
-            <button
-              onClick={handleMyPageClick}
-              className="text-sm bg-white px-3 py-1 rounded border shadow"
-            >
-              MY
-            </button>
+            <div />
           ) : (
             <button
               onClick={onLoginClick}
