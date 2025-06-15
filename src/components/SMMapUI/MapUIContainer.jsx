@@ -1,5 +1,4 @@
 import MenuTabs from "./MenuTabs";
-import SearchHeader from "./MenuTabs";
 import POIFilterTabs from "./POIFilterTabs";
 import { useNavigate } from "react-router-dom";
 
