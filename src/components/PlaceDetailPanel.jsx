@@ -58,7 +58,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       className={`absolute bottom-0 left-0 w-full bg-white 
         rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out
-        z-50
+        z-40
         ${isExpanded ? 'h-[60dvh]' : 'h-[25dvh] overflow-y-auto'}`}
     >
       <div

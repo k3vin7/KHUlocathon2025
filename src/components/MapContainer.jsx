@@ -67,8 +67,8 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         console.error('장소 목록 오류:', err);
       }
 
-      // ✅ 개발용 기본 마커 추가
-      const defaultPlace = {
+                                                                                                        // ✅ 개발용 기본 마커 추가
+      {/*const defaultPlace = {
         _id: 'default-static-place',
         name: '기본 테스트 장소',
         summary: '이 마커는 항상 존재합니다.',
@@ -83,6 +83,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         coordinates: { lat: 37.2855, lng: 127.0130 },
       };
       places.unshift(defaultPlace);
+      */}
 
       // ✅ 마커 및 오버레이 생성
       places.forEach((place) => {
@@ -118,11 +119,22 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         markersRef.current.push({ marker, overlay });
 
         const showPlaceDetail = async () => {
+          if (mapRef.current) {
+            const map = mapRef.current;
+            const original = place.coordinates;
+
+            const offsetLat = original.lat -0.0003;
+            const targetLatLng = new naver.maps.LatLng(offsetLat, original.lng);
+
+            const targetZoom = 19;
+            map.morph(targetLatLng, targetZoom, true);
+          }
+
           setSelectedPlace(place);
           setIsExpanded(true);
 
-          // 기본 마커는 fetch 생략
-          if (place._id === 'default-static-place') return;
+                                                                                                          // 개발용 기본 마커는 fetch 생략
+          // if (place._id === 'default-static-place') return;
 
           try {
             const res = await fetch(`${API_URL}/places/${place._id}`);

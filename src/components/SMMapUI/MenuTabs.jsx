@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import HomeButton from "../../assets/HomeButton.png"
 
 export default function MenuTabs() {
+  const navigate = useNavigate();
+  
   return (
     <div>
       <div className="
@@ -10,7 +13,7 @@ export default function MenuTabs() {
       grid grid-cols-3
       text-center items-center justify-center
       z-50">
-        <div>
+        <div onClick={()=>{ navigate('/archive') }}>
           <p>아카이빙</p>
         </div>
         <div className="

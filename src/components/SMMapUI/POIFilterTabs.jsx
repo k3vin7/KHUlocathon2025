@@ -20,9 +20,8 @@ export default function POIFilterTabs() {
             text-sm font-medium whitespace-nowrap
             transition-colors duration-200
             ${selected === cat
-              ? 'bg-teal-500 text-white'
-              : 'bg-white text-gray-400'}
-            shadow
+              ? 'bg-[#059C94] text-white shadow-inner'
+              : 'bg-white text-gray-400 shadow'}
           `}
         >
           {cat}

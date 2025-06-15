@@ -87,7 +87,6 @@ function App() {
                 />
               )}
               <MapContainer />
-              <MenuTabs />
             </div>
           }
         />
