@@ -58,40 +58,42 @@ export default function ArchivePage() {
   const archives = view === 'mine' ? myArchives : allArchives;
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <div className="flex space-x-4 mb-4">
-        <button
-          className={`px-4 py-2 rounded ${view === 'mine' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setView('mine')}
-        >
-          내 아카이빙
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${view === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setView('all')}
-        >
-          전체 아카이빙
-        </button>
-      </div>
+    <div>
+      <div className="p-4 max-w-3xl mx-auto">
+        <div className="flex space-x-4 mb-4">
+          <button
+            className={`px-4 py-2 rounded ${view === 'mine' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setView('mine')}
+          >
+            내 아카이빙
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${view === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setView('all')}
+          >
+            전체 아카이빙
+          </button>
+        </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {archives.length === 0 ? (
-          <p className="text-center col-span-2 text-gray-500">아카이빙된 사진이 없습니다.</p>
-        ) : (
-          archives.map((a) => (
-            <div key={a._id} className="relative border rounded overflow-hidden">
-              <img src={a.photoUrl} alt="archive" className="w-full h-40 object-cover" />
-              {view === 'mine' && (
-                <button
-                  onClick={() => handleDelete(a._id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
-                >
-                  삭제
-                </button>
-              )}
-            </div>
-          ))
-        )}
+        <div className="grid grid-cols-2 gap-4">
+          {archives.length === 0 ? (
+            <p className="text-center col-span-2 text-gray-500">아카이빙된 사진이 없습니다.</p>
+          ) : (
+            archives.map((a) => (
+              <div key={a._id} className="relative border rounded overflow-hidden">
+                <img src={a.photoUrl} alt="archive" className="w-full h-40 object-cover" />
+                {view === 'mine' && (
+                  <button
+                    onClick={() => handleDelete(a._id)}
+                    className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
       <MenuTabs />
     </div>

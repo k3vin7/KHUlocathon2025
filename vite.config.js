@@ -6,7 +6,7 @@ import autoprefixer from 'autoprefixer'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/',
+  base: './',
   plugins: [
     react(),
     VitePWA({
