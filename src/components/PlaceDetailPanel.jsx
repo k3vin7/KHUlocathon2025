@@ -59,7 +59,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out
         z-40
-        ${isExpanded ? 'h-[60dvh]' : 'h-[25dvh] overflow-y-auto'}`}
+        ${isExpanded ? 'h-[60dvh]' : 'h-[20dvh] overflow-y-auto'}`}
     >
       <div
         onClick={onToggleExpand}
@@ -67,7 +67,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       >
         <div className="w-[7.5dvw] h-[0.3dvh] bg-[#CCCCCC] rounded-full cursor-pointer" />
       </div>
-      <div className={`${isExpanded ? 'overflow-y-auto h-[50dvh]' : 'overflow-y-hidden h-[20dvh]'}`}>
+      <div className={`${isExpanded ? 'overflow-y-auto h-[50dvh]' : 'overflow-y-hidden h-[15dvh]'}`}>
         <div className='pt-[1.5dvh] mx-[7dvw]'>
           {/* 제목 및 카테고리 */}
           <div>
