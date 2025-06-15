@@ -46,7 +46,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out
         z-50
-        ${isExpanded ? 'h-[50dvh]' : 'h-[5dvh] overflow-y-auto'}`}
+        ${isExpanded ? 'h-[60dvh]' : 'h-[25dvh] overflow-y-auto'}`}
     >
       <div
         onClick={onToggleExpand}
@@ -60,7 +60,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         rounded-full
         cursor-pointer"></div>
       </div>
-      <div className={`${isExpanded ? 'overflow-y-auto h-[50dvh]' : 'overflow-y-hidden h-0'}`}>
+      <div className={`${isExpanded ? 'overflow-y-auto h-[50dvh]' : 'overflow-y-hidden h-[20dvh]'}`}>
         <div className='pt-[1.5dvh] mx-[7dvw]'>
           {/* 제목 및 카테고리 */}
           <div>
@@ -69,109 +69,126 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
             justify-between items-start">
               <div className='flex'>
                 <h3 className="text-[24px] font-bold">{place.name}</h3>
-                <p className="pl-[12px] py-[8.5px] text-[12px] text-gray-400">{place.category || '카테고리 없음'}</p>
+                <p className="pl-[12px] py-[8.5px] text-[12px] text-[#999999]">{place.category || '카테고리 없음'}</p>
               </div>
             </div>
+            {/* 장소 소개 */}
+              <div>
+                {place.description && (
+                  <p className="text-black text-sm leading-relaxed">
+                    {place.description}
+                  </p>
+                )}
+              </div>
           </div>
         </div>
 
         <div>
           {isExpanded && (
-            <div className="mt-3 space-y-5">
-              {place.description && (
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {place.description}
-                </p>
-              )}
+            <div>
+              
+              
+              <div className="
+              pt-[0.5dvh] mx-[7dvw]">
+                <div className="
 
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
-                <div>
-                  <h4 className="font-semibold mb-1">영업 정보</h4>
-                  <p className="whitespace-pre-wrap text-gray-700">
-                    {' ' + place.hours?.replaceAll(';', '\n')}
-                  </p>
+                pt-[2dvh]
+                grid grid-cols-[1fr_1px_3fr] gap-[6dvw] text-sm text-[#999999]">
+                  <div>
+                    <h4 className="
+                    font-semibold mb-[0.5dvh]">영업 정보</h4>
+                    <p className="
+                    whitespace-pre text-[#999999]">
+                      {' ' + place.hours?.replaceAll(';', '\n')}
+                    </p>
+                  </div>
+                  <div className='
+                  w-[0.3dvh] h-auto
+                  bg-[#CCCCCC]
+                  rounded-full
+                  cursor-pointer'/>
+                  <div>
+                    <h4 className="font-semibold mb-1">애견 관련 정보</h4>
+                    <p className="whitespace-pre-wrap text-[#999999]">
+                      {place.detail?.split('.').filter(Boolean).map(line => `• ${line.trim()}`).join('\n')}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold mb-1">애견 관련 정보</h4>
-                  <p className="whitespace-pre-wrap text-gray-700">
-                    {' ' + place.detail?.replaceAll('.', '\n')}
-                  </p>
-                </div>
-              </div>
 
-              {/* 외부 링크 */}
-              <div className="flex gap-3">
-                <a
-                  href={place.naverUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-3 py-1 border rounded-full text-sm text-gray-600 hover:bg-gray-100"
-                >
-                  <SiNaver className="text-lg" />
-                  네이버지도
-                </a>
-                {place.instagram && (
+                {/* 외부 링크 */}
+                <div className="flex gap-3 mt-[2dvh]">
                   <a
-                    href={place.instagram}
+                    href={place.naverUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 px-3 py-1 border rounded-full text-sm text-gray-600 hover:bg-gray-100"
                   >
-                    <FaInstagram className="text-lg" />
-                    인스타그램
+                    <SiNaver className="text-lg" />
+                    네이버지도
                   </a>
-                )}
-              </div>
-
-              {/* 장소 사진 (place.photos 기반) */}
-              <div className="flex gap-3 mt-2 overflow-x-auto">
-                {(place.photos && place.photos.length > 0 ? place.photos : ['/default.jpg']).map((url, i) => (
-                  <img
-                    key={i}
-                    src={url}
-                    alt={`장소 이미지 ${i + 1}`}
-                    className="w-40 h-40 object-cover rounded-md flex-shrink-0"
-                  />
-                ))}
-              </div>
-
-              {/* 아카이브 섹션 */}
-              <div>
-                <h4 className="text-base font-semibold mt-4">댕궁동 아카이브</h4>
-                <p className="text-sm text-gray-600 mt-1 mb-2">
-                  반려동물과 함께 방문한 사진을 업로드해보세요.
-                </p>
-
-                <div className="flex gap-2 mb-3">
-                  <input
-                    type="text"
-                    placeholder="사진 URL 입력"
-                    value={photoUrl}
-                    onChange={(e) => setPhotoUrl(e.target.value)}
-                    className="flex-1 px-2 py-1 border rounded text-sm"
-                  />
-                  <button
-                    onClick={handleArchiveSubmit}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
-                  >
-                    업로드
-                  </button>
+                  {place.instagram && (
+                    <a
+                      href={place.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-3 py-1 border rounded-full text-sm text-gray-600 hover:bg-gray-100"
+                    >
+                      <FaInstagram className="text-lg" />
+                      인스타그램
+                    </a>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  {archives.map((a) => (
+                {/* 장소 사진 (place.photos 기반) */}
+                <div className="flex gap-3 mt-2 overflow-x-auto">
+                  {(place.photos && place.photos.length > 0 ? place.photos : ['/default.jpg']).map((url, i) => (
                     <img
-                      key={a._id}
-                      src={a.photoUrl}
-                      alt="아카이브 이미지"
-                      className="w-full h-32 object-cover rounded"
+                      key={i}
+                      src={url}
+                      alt={`장소 이미지 ${i + 1}`}
+                      className="w-40 h-40 object-cover rounded-md flex-shrink-0"
                     />
                   ))}
                 </div>
-              </div>
 
-              {/* 리뷰 섹션 */}
-              <Review placeId={place._id} API_URL={API_URL} />
+                {/* 아카이브 섹션 */}
+                <div>
+                  <h4 className="text-base font-semibold mt-4">댕궁동 아카이브</h4>
+                  <p className="text-sm text-gray-600 mt-1 mb-2">
+                    반려동물과 함께 방문한 사진을 업로드해보세요.
+                  </p>
+
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      placeholder="사진 URL 입력"
+                      value={photoUrl}
+                      onChange={(e) => setPhotoUrl(e.target.value)}
+                      className="flex-1 px-2 py-1 border rounded text-sm"
+                    />
+                    <button
+                      onClick={handleArchiveSubmit}
+                      className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+                    >
+                      업로드
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {archives.map((a) => (
+                      <img
+                        key={a._id}
+                        src={a.photoUrl}
+                        alt="아카이브 이미지"
+                        className="w-full h-32 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* 리뷰 섹션 */}
+                <Review placeId={place._id} API_URL={API_URL} />
+              </div>
             </div>
           )}
         </div>

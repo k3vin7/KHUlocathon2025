@@ -37,9 +37,7 @@ export default function MapUIContainer({ isLoggedIn, onLoginClick, onMyPageClick
       <div className="absolute top-[60px] left-0 w-full z-10 p-2">
         <POIFilterTabs />
       </div>
-      <div className="absolute bottom-[20px] left-0 w-full z-50">
-        <MenuTabs />
-      </div>
+      <MenuTabs />
     </div>
   );
 }

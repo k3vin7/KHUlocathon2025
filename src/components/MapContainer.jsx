@@ -72,9 +72,15 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         _id: 'default-static-place',
         name: '기본 테스트 장소',
         summary: '이 마커는 항상 존재합니다.',
-        detail: '개발용 기본 장소입니다.',
+        detail: '애견 동반 가능. 음식 없음.',
+        description: '이곳은 개발용으로 생성된 기본 장소입니다.이곳은 개발용으로 생성된 기본 장소입니다.',
+        category: '기타',
         address: '경기도 용인시 어디쯤',
-        coordinates: { lat: 37.2850, lng: 127.0130 },
+        hours: '00:00~24:00;항상 열려 있음',
+        photos: ['/default.jpg'],
+        naverUrl: 'https://map.naver.com/',
+        instagram: 'https://instagram.com/',
+        coordinates: { lat: 37.2855, lng: 127.0130 },
       };
       places.unshift(defaultPlace);
 
@@ -98,10 +104,9 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         const overlayContent = document.createElement('div');
         overlayContent.innerHTML = `
           <div class="relative w-max max-w-[200px]">
-            <div class="bg-[#2B1D18B2] text-white rounded-xl px-4 py-2 text-sm leading-relaxed shadow-md">
+            <div class="bg-[#2B1D18B2] text-white rounded-xl px-[20px] py-[12px] text-sm leading-relaxed shadow-md">
               <div class="font-bold text-base">${place.name}</div>
               <div>${place.summary || place.detail || '정보 없음'}</div>
-              <div class="text-xs text-gray-300">${place.address || ''}</div>
             </div>
             <div class="absolute left-1/2 -translate-x-1/2 w-0 h-0 
                         border-l-8 border-r-8 border-t-[10px] 
@@ -149,7 +154,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   }, []);
 
   return (
-    <div className="relative w-screen h-[100dvh]">
+    <div className="relative w-screen h-[100dvh] overflow-y-hidden">
       <div id="map" className="w-full h-full" />
 
       {map && <CurrentPosition map={map} />}
