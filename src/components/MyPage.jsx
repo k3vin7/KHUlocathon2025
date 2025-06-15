@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import MenuTabs from "./SMMapUI/MenuTabs";
 
 export default function MyPage({ userData, onLogout }) {
   if (!userData) return <p className="p-4 text-gray-500"></p>;
@@ -81,6 +82,7 @@ export default function MyPage({ userData, onLogout }) {
           로그아웃
         </button>
       </div>
+      <MenuTabs />
     </div>
   );
 }

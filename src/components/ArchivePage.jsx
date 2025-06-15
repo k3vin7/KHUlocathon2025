@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import MenuTabs from './SMMapUI/MenuTabs';
 
  const API_URL = import.meta.env.VITE_API_URL;
 
@@ -92,6 +93,7 @@ export default function ArchivePage() {
           ))
         )}
       </div>
+      <MenuTabs />
     </div>
   );
 }

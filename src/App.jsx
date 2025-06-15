@@ -7,7 +7,6 @@ import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
 import MyPage from './components/MyPage';
 import ArchivePage from './components/ArchivePage';
-import MenuTabs from './components/SMMapUI/MenuTabs';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
