@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import MapContainer from './components/MapContainer';
 import PCMapUIContainer from './components/PCMapUI/MapUIContainer';
 import SMMapUIContainer from './components/SMMapUI/MapUIContainer';
+
 import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
 import MyPage from './components/MyPage';
@@ -35,7 +37,6 @@ function App() {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-
     fetch(`${API_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -82,10 +83,15 @@ function App() {
               ) : (
                 <PCMapUIContainer
                   isLoggedIn={isLoggedIn}
-                  onLoginClick={() => setShowLogin(true)}
+                  onLoginClick={() => setShowLogin(true)}  // ✅ onLoginClick 전달 완료
                 />
               )}
-              <MapContainer />
+              <MapContainer
+                userData={userData}
+                onLogout={handleLogout}
+                showMyPage={false}
+                setShowMyPage={() => {}}
+              />
             </div>
           }
         />
@@ -98,7 +104,12 @@ function App() {
             />
           }
         />
-        <Route path="/archive" element={<ArchivePage />} />
+        <Route
+          path="/archive"
+          element={
+            <ArchivePage />
+          }
+        />
       </Routes>
     </Router>
   );

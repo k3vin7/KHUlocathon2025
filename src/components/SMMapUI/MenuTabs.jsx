@@ -6,10 +6,9 @@ import CoArchiveButton from "../../assets/CoArchiveButton.png";
 import MyPageButton from "../../assets/MyPageButton.png";
 import CoMyPageButton from "../../assets/CoMyPageButton.png";
 
-export default function MenuTabs({ isLoggedIn }) {
+export default function MenuTabs({ isLoggedIn, onLoginClick }) {
   const navigate = useNavigate();
   const location = useLocation();
-
   const path = location.pathname;
 
   return (
@@ -26,28 +25,35 @@ export default function MenuTabs({ isLoggedIn }) {
         <img
           src={path === "/" ? CoMapButton : MapButton}
           className="h-[5dvh]"
+          alt="Map"
         />
       </div>
 
       {/* 아카이브 */}
       <div
         className="flex flex-col items-center justify-center"
-        onClick={() => isLoggedIn? navigate( "/archive"): <LoginPage />}
+        onClick={() => {
+          isLoggedIn ? navigate("/archive") : onLoginClick();
+        }}
       >
         <img
           src={path === "/archive" ? CoArchiveButton : ArchiveButton}
           className="h-[5dvh]"
+          alt="Archive"
         />
       </div>
 
       {/* 마이페이지 */}
       <div
         className="flex flex-col items-center justify-center"
-        onClick={() => navigate(`${isLoggedIn? "/mypage": "/LoginPage"}`)}
+        onClick={() => {
+          isLoggedIn ? navigate("/mypage") : onLoginClick();
+        }}
       >
         <img
           src={path === "/mypage" ? CoMyPageButton : MyPageButton}
           className="h-[5dvh]"
+          alt="MyPage"
         />
       </div>
     </div>
