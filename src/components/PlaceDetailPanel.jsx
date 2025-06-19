@@ -113,7 +113,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
                 </div>
                 <div className='w-[0.3dvh] h-auto bg-[#CCCCCC] rounded-full' />
                 <div>
-                  <h4 className="font-semibold mb-1">반려동물 동반 정보</h4>
+                  <h4 className="font-semibold mb-1"></h4>
                   <p className="whitespace-pre-wrap text-[#999999]">
                     {place.detail?.split('.').filter(Boolean).map(line => `• ${line.trim()}`).join('\n')}
                   </p>
