@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import MenuTabs from "./SMMapUI/MenuTabs";
 import TopBar from "../components/SMMapUI/TopBar";
 import starter from "../assets/입문자.png"
+import explorer from "../assets/탐험가.png"
+import expert from "../assets/전문가.png"
+import master from "../assets/마스터.png"
 
 export default function MyPage({ userData, onLogout, onLoginClick }) {
   if (!userData) return <p className="p-4 text-gray-500"></p>;
@@ -26,11 +29,11 @@ export default function MyPage({ userData, onLogout, onLoginClick }) {
     <div>
       <TopBar title = "마이페이지" />
 
+      {/* 회원 정보 */}
       <div className="
       relative
       flex flex-col
-      h-[16dvh]
-      mx-[24px] my-[32px]">
+      mx-[24px] m-[32px]">
         <h1 className="mb-[24px] text-[#999999] text-[16px] leading-[140%] tracking-tight">회원 정보</h1>
         <div className="
         flex">
@@ -64,6 +67,28 @@ export default function MyPage({ userData, onLogout, onLoginClick }) {
           </div>
         </div>
       </div>
+
+      {/* 진척도 박스 */}
+      <div className="
+      relative
+      flex flex-col
+      mx-[24px]
+      bg-[#CCCCCC] rounded-xl p-4">
+        <div className="
+        flex
+        justify-center">
+          <p className="text-[12px]">n 번 더 사진을 업로드하면 댕궁동 탐험가!</p>
+        </div>
+        <div className="
+        mt-[2.3dvh]
+        grid grid-cols-4">
+          <img src = {starter} />
+          <img src = {explorer} />
+          <img src = {expert} />
+          <img src = {master} />
+        </div>
+      </div>
+
 
       <MenuTabs isLoggedIn={!!userData} onLoginClick={onLoginClick} />
     </div>
