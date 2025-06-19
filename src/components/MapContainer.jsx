@@ -61,7 +61,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
       // ✅ 장소 목록 불러오기
       let places = [];
       try {
-        const res = await fetch(`${API_URL}/api/places`);
+        const res = await fetch(`${API_URL}/places`);
         places = await res.json();
       } catch (err) {
         console.error('장소 목록 오류:', err);
@@ -137,7 +137,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           // if (place._id === 'default-static-place') return;
 
           try {
-            const res = await fetch(`${API_URL}/api/places/${place._id}`);
+            const res = await fetch(`${API_URL}/places/${place._id}`);
             const detailedPlace = await res.json();
             setSelectedPlace(detailedPlace);
           } catch (err) {
