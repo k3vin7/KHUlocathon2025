@@ -1,7 +1,7 @@
 import MenuTabs from "./MenuTabs";
 import POIFilterTabs from "./POIFilterTabs";
 
-export default function MapUIContainer({ isLoggedIn, onLoginClick }) {
+export default function SMMapUIContainer({ isLoggedIn, onLoginClick }) {
   return (
     <div>
       <div className="absolute top-0 left-0 w-full h-[6vh] bg-white bg-opacity-80 z-10 shadow flex items-center justify-between px-4">

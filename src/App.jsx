@@ -91,6 +91,7 @@ function App() {
                 onLogout={handleLogout}
                 showMyPage={false}
                 setShowMyPage={() => {}}
+                onLoginClick={() => setShowLogin(true)}
               />
             </div>
           }
@@ -101,13 +102,14 @@ function App() {
             <MyPage
               userData={userData}
               onLogout={handleLogout}
+              onLoginClick={() => setShowLogin(true)}
             />
           }
         />
         <Route
           path="/archive"
           element={
-            <ArchivePage />
+            <ArchivePage onLoginClick={() => setShowLogin(true)} />
           }
         />
       </Routes>

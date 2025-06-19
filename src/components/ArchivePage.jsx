@@ -3,7 +3,7 @@ import MenuTabs from './SMMapUI/MenuTabs';
 
  const API_URL = import.meta.env.VITE_API_URL;
 
-export default function ArchivePage() {
+export default function ArchivePage({ onLoginClick }) {
   const [view, setView] = useState('mine'); // 'mine' or 'all'
   const [myArchives, setMyArchives] = useState([]);
   const [allArchives, setAllArchives] = useState([]);
@@ -95,7 +95,7 @@ export default function ArchivePage() {
           )}
         </div>
       </div>
-      <MenuTabs />
+      <MenuTabs isLoggedIn={!!localStorage.getItem('token')} onLoginClick={onLoginClick} />
     </div>
   );
 }

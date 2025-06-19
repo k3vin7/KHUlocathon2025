@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import MenuTabs from "./SMMapUI/MenuTabs";
 
-export default function MyPage({ userData, onLogout }) {
+export default function MyPage({ userData, onLogout, onLoginClick }) {
   if (!userData) return <p className="p-4 text-gray-500"></p>;
 
   // 칭호별 뱃지 이미지 매핑
@@ -84,7 +84,7 @@ export default function MyPage({ userData, onLogout }) {
           </button>
         </div>
       </div>
-      <MenuTabs />
+      <MenuTabs isLoggedIn={!!userData} onLoginClick={onLoginClick} />
     </div>
   );
 }
