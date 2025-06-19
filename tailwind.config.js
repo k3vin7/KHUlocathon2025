@@ -7,6 +7,8 @@ export default {
     extend: {
       fontFamily: {
         santokki: ['HSSanTokki', 'sans-serif'],
+        sans: ['Pretendard', 'sans-serif'],
+        pretendard: ['Pretendard', 'sans-serif'], 
       },
     },
   },

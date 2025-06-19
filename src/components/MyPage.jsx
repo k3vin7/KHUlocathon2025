@@ -29,7 +29,7 @@ export default function MyPage({ userData, onLogout, onLoginClick }) {
       <div className="
       relative
       flex flex-col
-      h-[16dvh] top-[6dvh]
+      h-[16dvh]
       mx-[24px] my-[32px]">
         <h1 className="mb-[24px] text-[#999999] text-[16px] leading-[140%] tracking-tight">회원 정보</h1>
         <div className="
