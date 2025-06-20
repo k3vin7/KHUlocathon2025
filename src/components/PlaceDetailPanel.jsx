@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react';
 import { FaInstagram } from 'react-icons/fa';
 import { SiNaver } from 'react-icons/si';
+import ImageOverlay from './SMMapUI/ImageOverlay';
 import Review from './Review';
 
 export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleExpand, API_URL }) {
   const [archives, setArchives] = useState([]);
+  const [ar2, setAr2] = useState([]);
   const [photoFile, setPhotoFile] = useState(null);
   const [tab, setTab] = useState('info');
+  const [userInfo, setUserInfo] = useState(null);
+  const [myUserId, setMyUserId] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null); // 오버레이 인덱스
+
 
   const fetchArchives = async () => {
     try {
@@ -17,6 +23,61 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       console.error('아카이빙 조회 실패:', err);
     }
   };
+
+
+  const fetchArchives2 = async () => {
+    try {
+      const archiveData = archives
+
+      const placeIds = [...new Set(archiveData.map((item) => item.placeId))];
+      const placeMap = {};
+      await Promise.all(
+        placeIds.map(async (id) => {
+          const res = await fetch(`${API_URL}/places/${id}`);
+          const data = await res.json();
+          placeMap[id] = data.name;
+        })
+      );
+
+      const enriched = archiveData.map((item) => {
+        const dateObj = new Date(item.createdAt);
+        const formattedDate = dateObj.toLocaleDateString('ko-KR', {
+          month: '2-digit',
+          day: '2-digit',
+        }).replace(/\. /g, '.').replace('.', '.');
+        const year = dateObj.getFullYear();
+        return {
+          ...item,
+          date: formattedDate,
+          year,
+          placeName: placeMap[item.placeId] || '알 수 없음',
+        };
+      });
+
+      setAr2(enriched);
+    } catch (err) {
+      console.error('전체 아카이브 불러오기 실패', err);
+    }
+  };
+
+  useEffect(() => {
+      const fetchUserInfo = async () => {
+        if (selectedIndex === null) return;
+        const userId = archives[selectedIndex]?.userId;
+        if (!userId) return;
+  
+        try {
+          const res = await fetch(`${API_URL}/auth/get/${userId}`);
+          const data = await res.json();
+          setUserInfo(data); // { nickname, title, ... }
+        } catch (err) {
+          console.error('사용자 정보 불러오기 실패:', err);
+          setUserInfo(null);
+        }
+      };
+  
+      fetchUserInfo();
+    }, [selectedIndex]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -54,6 +115,30 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       setTab('info');
     }
   }, [isExpanded, place]);
+  useEffect(() => {
+    if (archives.length > 0) {
+      fetchArchives2(); // archives 기반
+    }
+  }, [archives]);
+
+  useEffect(() => {
+      const fetchMyInfo = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) return;
+  
+          const res = await fetch(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          setMyUserId(data._id); // 유저 ID 저장
+        } catch (err) {
+          console.error('유저 정보 불러오기 실패', err);
+        }
+      };
+  
+      fetchMyInfo();
+    }, []);
 
   const isWalkCourse = place.category === '산책코스';
 
@@ -171,15 +256,47 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
                   </p>
 
                   <div className="grid grid-cols-3 gap-2 mb-[100px]">
-                    {archives.map((a) => (
+                    {archives.map((a, i) => (
                       <img
                         key={a._id}
                         src={a.photoUrl}
                         alt="아카이브 이미지"
-                        className="w-full h-32 object-cover rounded"
+                        className="w-full h-32 object-cover rounded cursor-pointer"
+                        onClick={() => setSelectedIndex(i)}
                       />
                     ))}
                   </div>
+
+                  {/* 오버레이 */}
+                  {selectedIndex !== null && (
+                    <ImageOverlay
+                      archives={ar2}
+                      selectedIndex={selectedIndex}
+                      setSelectedIndex={setSelectedIndex}
+                      onClose={() => setSelectedIndex(null)}
+                      userInfo={userInfo}
+                      myUserId={myUserId}
+                      onDelete={(archiveId) => {
+                        const confirmDelete = window.confirm('정말로 삭제하시겠습니까?');
+                        if (!confirmDelete) return;
+
+                        const token = localStorage.getItem('token');
+                        fetch(`${API_URL}/archives/${archiveId}`, {
+                          method: 'DELETE',
+                          headers: { Authorization: `Bearer ${token}` },
+                        })
+                          .then(() => {
+                            const updated = archives.filter((item) => item._id !== archiveId);
+                            setArchives(updated);
+                            setSelectedIndex(null);
+                          })
+                          .catch((err) => {
+                            console.error('삭제 실패:', err);
+                            alert('삭제에 실패했습니다.');
+                          });
+                      }}
+                    />
+                  )}
 
                   <div className="absolute bottom-[72px] left-0 w-full px-[7dvw] z-50">
                     <label
