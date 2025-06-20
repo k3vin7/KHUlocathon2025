@@ -82,9 +82,14 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         <div className="overflow-y-auto px-[7dvw] h-[calc(60dvh-11dvh)] pb-[120px]">
           {isWalkCourse ? (
             <>
-              <h4 className="text-sm font-semibold mt-6 mb-2 text-[#4A4A4A]">주의 사항</h4>
+              <h4 className="text-sm font-semibold mt-6 mb-2 text-[#000000]">주의 사항</h4>
               <ul className="list-disc list-inside text-sm text-[#6A6A6A] space-y-1">
-                {place.detail}
+                {place.detail
+                  .split('-')
+                  .filter(Boolean)
+                  .map((line, i) => (
+                    <p key={i} className="text-sm text-gray-600">• {line.trim()}</p>
+                  ))}
               </ul>
             </>
           ) : (
