@@ -9,12 +9,12 @@ export default function POIFilterTabs({ category, setCategory }) {
           className={`
             px-4 py-2 min-w-[70px] rounded-full
             text-sm font-medium whitespace-nowrap
+            flex items-center justify-center
             transition-colors duration-200
             ${category === cat
               ? 'bg-[#059C94] text-white shadow-inner'
               : 'bg-white text-gray-400 shadow'}
-          `}
-        >
+          `}>
           {cat}
         </button>
       ))}
