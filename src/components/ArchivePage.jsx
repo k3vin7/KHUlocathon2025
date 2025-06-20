@@ -1,100 +1,130 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TopBar from "../components/SMMapUI/TopBar";
 import MenuTabs from './SMMapUI/MenuTabs';
 
- const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ArchivePage({ onLoginClick }) {
-  const [view, setView] = useState('mine'); // 'mine' or 'all'
+  const navigate = useNavigate();
   const [myArchives, setMyArchives] = useState([]);
   const [allArchives, setAllArchives] = useState([]);
 
-  const fetchMyArchives = async () => {
-    try {
-      const res = await fetch(`${API_URL}/archives/mine`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const data = await res.json();
-      setMyArchives(data);
-    } catch (err) {
-      console.error('내 아카이브 불러오기 실패', err);
-    }
-  };
+  useEffect(() => {
+    const fetchMyArchives = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-  const fetchAllArchives = async () => {
-    try {
-      const res = await fetch(`${API_URL}/archives/all`);
-      const data = await res.json();
-      setAllArchives(data);
-    } catch (err) {
-      console.error('전체 아카이브 불러오기 실패', err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    const confirm = window.confirm('정말로 삭제하시겠습니까?');
-    if (!confirm) return;
-
-    try {
-        await fetch(`${API_URL}/archives/${id}`, {
-        method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        const res = await fetch(`${API_URL}/archives/mine`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        fetchMyArchives(); // 다시 불러오기
-    } catch (err) {
-        console.error('삭제 실패', err);
-    }
+        const data = await res.json();
+        setMyArchives(data);
+      } catch (err) {
+        console.error('나의 아카이브 불러오기 실패', err);
+      }
     };
 
+    const fetchAllArchives = async () => {
+      try {
+        const res = await fetch(`${API_URL}/archives/all`);
+        const data = await res.json();
+        setAllArchives(data);
+      } catch (err) {
+        console.error('전체 아카이브 불러오기 실패', err);
+      }
+    };
 
-  useEffect(() => {
-    if (view === 'mine') fetchMyArchives();
-    else fetchAllArchives();
-  }, [view]);
+    fetchMyArchives();
+    fetchAllArchives();
+  }, []);
 
-  const archives = view === 'mine' ? myArchives : allArchives;
+  const getLayout = (archives, remainingCount) => {
+  const bigPhoto = archives[0];
+  const smallPhotos = archives.slice(1, 5); // 최대 4장만 표시
+
+  return (
+    <div className="flex gap-1 h-36">
+      {/* 왼쪽 큰 이미지 */}
+      <div className="flex-1 h-full">
+        <img
+          src={bigPhoto?.photoUrl}
+          alt="big"
+          className="w-full h-full object-cover rounded"
+        />
+      </div>
+
+      {/* 오른쪽 2x2 그리드 */}
+      <div className="grid grid-cols-2 grid-rows-2 gap-1 w-1/2">
+        {smallPhotos.map((photo, i) => {
+          const isLast = i === 3 && remainingCount > 0;
+          return (
+            <div key={i} className="relative">
+              <img
+                src={photo.photoUrl}
+                alt={`small-${i}`}
+                className={`w-full h-full object-cover rounded ${
+                  isLast ? 'grayscale brightness-75' : ''
+                }`}
+              />
+              {isLast && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-white text-lg font-semibold">+{remainingCount}</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+
+
 
   return (
     <div>
-      <div className="p-4 max-w-3xl mx-auto">
-        <div className="flex space-x-4 mb-4">
-          <button
-            className={`px-4 py-2 rounded ${view === 'mine' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => setView('mine')}
-          >
-            내 아카이빙
-          </button>
-          <button
-            className={`px-4 py-2 rounded ${view === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => setView('all')}
-          >
-            전체 아카이빙
+      <TopBar title = "댕궁동 아카이브" />
+      {/* 나의 아카이브 */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-md font-semibold">나의 아카이브 · {myArchives.length}</h3>
+          <button onClick={() => navigate('/archive/mine')}>
+            <span className="text-orange-500 font-semibold">{'>'}</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          {archives.length === 0 ? (
-            <p className="text-center col-span-2 text-gray-500">아카이빙된 사진이 없습니다.</p>
-          ) : (
-            archives.map((a) => (
-              <div key={a._id} className="relative border rounded overflow-hidden">
-                <img src={a.photoUrl} alt="archive" className="w-full h-40 object-cover" />
-                {view === 'mine' && (
-                  <button
-                    onClick={() => handleDelete(a._id)}
-                    className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
-                  >
-                    삭제
-                  </button>
-                )}
-              </div>
-            ))
-          )}
-        </div>
+        {myArchives.length === 0 ? (
+          <div className="w-full h-40 bg-gray-200 flex justify-center items-center rounded">
+            <img src="/empty-image-icon.png" alt="empty" className="w-10 h-10 opacity-50" />
+          </div>
+        ) : (
+          getLayout(myArchives, myArchives.length - 5)
+        )}
       </div>
+
+      {/* 댕궁동 아카이브 */}
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-md font-semibold">댕궁동 아카이브 · {allArchives.length}</h3>
+          <button onClick={() => navigate('/archive/all')}>
+            <span className="text-orange-500 font-semibold">{'>'}</span>
+          </button>
+        </div>
+
+        {allArchives.length === 0 ? (
+          <div className="w-full h-40 bg-gray-200 flex justify-center items-center rounded">
+            <img src="/empty-image-icon.png" alt="empty" className="w-10 h-10 opacity-50" />
+          </div>
+        ) : (
+          getLayout(allArchives, allArchives.length - 5)
+        )}
+
+        <p className="text-sm text-gray-500 mt-1">반려인들이 댕궁동에서 남긴 추억들을 확인해보세요.</p>
+      </div>
+
       <MenuTabs isLoggedIn={!!localStorage.getItem('token')} onLoginClick={onLoginClick} />
     </div>
   );

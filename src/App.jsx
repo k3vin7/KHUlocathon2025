@@ -9,6 +9,7 @@ import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
 import MyPage from './components/MyPage';
 import ArchivePage from './components/ArchivePage';
+import MyArchivePage from './components/MyArchivePage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -110,6 +111,12 @@ function App() {
           path="/archive"
           element={
             <ArchivePage onLoginClick={() => setShowLogin(true)} />
+          }
+        />
+        <Route
+          path="/archive/mine"
+          element={
+            <MyArchivePage onLoginClick={() => setShowLogin(true)} />
           }
         />
       </Routes>
