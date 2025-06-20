@@ -197,9 +197,9 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
               {tab === 'info' && (
                 <>
                   <div className="pt-[2dvh] grid grid-cols-[1fr_1px_3fr] gap-[6dvw] text-sm text-[#999999]">
-                    <div>
+                    <div className='min-w-[30dvw]'>
                       <h4 className="font-semibold mb-[0.5dvh]">영업 상태</h4>
-                      <p className="whitespace-pre text-[#999999]">
+                      <p className="whitespace-pre-wrap break-words text-[#999999]">
                         {' ' + place.hours?.replaceAll(';', '\n')}
                       </p>
                     </div>
