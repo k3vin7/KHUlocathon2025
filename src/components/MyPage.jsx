@@ -42,7 +42,7 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
           <div className="flex items-center">
             <img
               src={badgeImages[levelLabels.indexOf(levelInfo.level)]}
-              className="h-[6.5dvh] w-[6.5dvh] rounded-full border-2 border-[#FF6100]"
+              className="h-[6.5dvh] w-[6.5dvh] rounded-full"
             />
             <div className="ml-[3dvw]">
               <p className="text-[2.3dvh] font-medium">{userData.nickname}</p>
