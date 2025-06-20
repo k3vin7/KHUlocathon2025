@@ -11,6 +11,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   const [map, setMap] = useState(null);
   const [places, setPlaces] = useState([]);
   const walkCircleRef = useRef(null);
+  const walkMarkersRef = useRef([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [category, setCategory] = useState('전체');
@@ -128,7 +129,6 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
       markersRef.current.push({ marker, overlay });
 
       const showPlaceDetail = async () => {
-        // ✅ 기존 원 제거
         if (walkCircleRef.current) {
           walkCircleRef.current.setMap(null);
           walkCircleRef.current = null;
@@ -170,7 +170,11 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   useEffect(() => {
     if (!map) return;
 
+    walkMarkersRef.current.forEach((marker) => marker.setMap(null));
+    walkMarkersRef.current = [];
+
     const walkPlaces = places.filter((p) => p.category === '산책코스' && p.coordinates);
+    if (category !== '전체' && category !== '산책코스') return;
 
     walkPlaces.forEach((place) => {
       const latLng = new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
@@ -186,42 +190,42 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         title: place.name,
       });
 
+      walkMarkersRef.current.push(marker);
+
       marker.addListener('click', () => {
-  if (walkCircleRef.current) {
-    walkCircleRef.current.setMap(null);
-    walkCircleRef.current = null;
-  }
+        if (walkCircleRef.current) {
+          walkCircleRef.current.setMap(null);
+          walkCircleRef.current = null;
+        }
 
-  map.morph(latLng, 18, true); // ✅ 자연스럽게 확대
+        map.morph(latLng, 18, true);
 
-  const idleListener = window.naver.maps.Event.addListener(map, 'idle', () => {
-    const circle = new window.naver.maps.Circle({
-      map,
-      center: latLng,
-      radius: Number(place.radius) || 300,
-      strokeColor: '#FF6600',
-      strokeOpacity: 0.7,
-      strokeWeight: 2,
-      fillColor: '#FFB266',
-      fillOpacity: 0.3,
-      clickable: false,
-      zIndex: 1,
+        const idleListener = window.naver.maps.Event.addListener(map, 'idle', () => {
+          const circle = new window.naver.maps.Circle({
+            map,
+            center: latLng,
+            radius: Number(place.radius) || 300,
+            strokeColor: '#FF6600',
+            strokeOpacity: 0.7,
+            strokeWeight: 2,
+            fillColor: '#FFB266',
+            fillOpacity: 0.3,
+            clickable: false,
+            zIndex: 1,
+          });
+
+          walkCircleRef.current = circle;
+
+          setTimeout(() => {
+            setSelectedPlace(place);
+            setIsExpanded(true);
+          }, 50);
+
+          window.naver.maps.Event.removeListener(idleListener);
+        });
+      });
     });
-    console.log('반지름 확인:', place.radius, typeof place.radius);
-
-    walkCircleRef.current = circle;
-
-    setTimeout(() => {
-      setSelectedPlace(place);
-      setIsExpanded(true);
-    }, 50);
-
-    window.naver.maps.Event.removeListener(idleListener);
-  });
-});
-
-    });
-  }, [map, places]);
+  }, [map, places, category]);
 
   return (
     <div className="relative w-screen h-[100dvh] overflow-y-hidden">
