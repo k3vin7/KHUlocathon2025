@@ -13,7 +13,7 @@ export default function POIFilterTabs({ category, setCategory }) {
             transition-colors duration-200
             ${category === cat
               ? 'bg-[#059C94] text-white shadow-inner'
-              : 'bg-white text-gray-400 shadow'}
+              : 'bg-white text-gray-400 border'}
           `}>
           {cat}
         </button>

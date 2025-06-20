@@ -10,24 +10,6 @@ import LoginPage from './components/LoginPage';
 import MyPage from './components/MyPage';
 import ArchivePage from './components/ArchivePage';
 import MenuTabs from './components/SMMapUI/MenuTabs';
-
-function MainPage({ isMobile, isLoggedIn, onLoginClick }) {
-  return (
-    <>
-      {isMobile ? (
-        <SMMapUIContainer
-          isLoggedIn={isLoggedIn}
-          onLoginClick={onLoginClick}
-        />
-      ) : (
-        <PCMapUIContainer
-          isLoggedIn={isLoggedIn}
-          onLoginClick={onLoginClick}
-        />
-      )}
-    </>
-  );
-}
 import MyArchivePage from './components/MyArchivePage';
 import AllArchivePage from './components/AllArchivePage';
 
@@ -96,11 +78,6 @@ function App() {
           path="/"
           element={
             <div>
-              <MainPage
-                isMobile={isMobile}
-                isLoggedIn={isLoggedIn}
-                onLoginClick={() => setShowLogin(true)}
-              />
               <MapContainer
                 userData={userData}
                 onLogout={handleLogout}
