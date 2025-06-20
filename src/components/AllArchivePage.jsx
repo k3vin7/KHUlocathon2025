@@ -1,13 +1,35 @@
 import { useEffect, useState } from 'react';
 import MenuTabs from './SMMapUI/MenuTabs';
 import TopBar from './SMMapUI/TopBarBack';
-import BackIcon from '../assets/backicon.png';
+import ImageOverlay from './SMMapUI/ImageOverlay';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AllArchivePage({ onLoginClick }) {
   const [archives, setArchives] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+  const [myUserId, setMyUserId] = useState(null);
+
+  // 선택된 이미지가 바뀔 때마다 사용자 정보 요청
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (selectedIndex === null) return;
+      const userId = archives[selectedIndex]?.userId;
+      if (!userId) return;
+
+      try {
+        const res = await fetch(`${API_URL}/auth/get/${userId}`);
+        const data = await res.json();
+        setUserInfo(data); // { nickname, title, ... }
+      } catch (err) {
+        console.error('사용자 정보 불러오기 실패:', err);
+        setUserInfo(null);
+      }
+    };
+
+    fetchUserInfo();
+  }, [selectedIndex]);
 
   useEffect(() => {
     const fetchArchives = async () => {
@@ -47,6 +69,25 @@ export default function AllArchivePage({ onLoginClick }) {
     };
 
     fetchArchives();
+  }, []);
+ 
+  useEffect(() => {
+    const fetchMyInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const res = await fetch(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setMyUserId(data._id); // 유저 ID 저장
+      } catch (err) {
+        console.error('유저 정보 불러오기 실패', err);
+      }
+    };
+
+    fetchMyInfo();
   }, []);
 
   const groupedByYear = archives.reduce((acc, item) => {
@@ -103,44 +144,33 @@ export default function AllArchivePage({ onLoginClick }) {
           ))}
       </div>
 
-      {selectedIndex !== null && (
-        <div
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}
-          onClick={closeOverlay}
-        >
-          <div
-            className="flex justify-between items-center w-full px-4 mb-2 text-[#CCCCCC] text-[14px] font-medium"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button onClick={() => setSelectedIndex(i => i > 0 ? i - 1 : i)}>
-              <img src={BackIcon} alt="prev" className="w-7 h-7" />
-            </button>
-            <span>{selectedIndex + 1} / {archives.length}</span>
-            <button onClick={() => setSelectedIndex(i => i < archives.length - 1 ? i + 1 : i)}>
-              <img src={BackIcon} alt="next" className="w-7 h-7 -scale-x-100" />
-            </button>
-          </div>
+      <ImageOverlay
+        archives={archives}
+        selectedIndex={selectedIndex}
+        onClose={closeOverlay}
+        setSelectedIndex={setSelectedIndex}
+        userInfo={userInfo}
+        myUserId={myUserId}
+        onDelete={(archiveId) => {
+          const confirmDelete = window.confirm('정말로 삭제하시겠습니까?');
+          if (!confirmDelete) return;
 
-          <img
-            src={archives[selectedIndex].photoUrl}
-            alt="zoomed"
-            className="max-w-[90%] max-h-[70%] rounded"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          <div
-            className="flex justify-between items-center w-full px-4 mt-2 text-white text-sm"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div>
-              <span className="mr-1 text-[12px] text-[#CCCCCC]">{archives[selectedIndex].date}</span>
-              <span className="text-[12px] text-[#CCCCCC]">|</span>
-              <span className="text-[13px] font-semibold ml-1">{archives[selectedIndex].placeName}</span>
-            </div>
-          </div>
-        </div>
-      )}
+          const token = localStorage.getItem('token');
+          fetch(`${API_URL}/archives/${archiveId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then(() => {
+              const updated = archives.filter((item) => item._id !== archiveId);
+              setArchives(updated);
+              setSelectedIndex(null);
+            })
+            .catch((err) => {
+              console.error('삭제 실패:', err);
+              alert('삭제에 실패했습니다.');
+            });
+        }}
+      />
 
       <MenuTabs
         isLoggedIn={!!localStorage.getItem('token')}
