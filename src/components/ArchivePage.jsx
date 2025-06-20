@@ -102,7 +102,7 @@ export default function ArchivePage({ onLoginClick }) {
         </div>
         {/* 이미지 레이아웃 */}
         {myArchives.length === 0 ? (
-          <div className="w-40 h-40 overflow-hidden flex justify-center items-center">
+          <div className="w-[50%] aspect-square overflow-hidden flex justify-center items-center">
             <img src={unknownImg} alt="empty" className="w-50 h-50 opacity-50" />
           </div>
         ) : (
