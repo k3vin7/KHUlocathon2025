@@ -1,7 +1,7 @@
 export default function POIFilterTabs({ category, setCategory }) {
   const categories = ['전체', '음식점', '카페', '상점', '주점', '동물병원', '산책코스'];
   return (
-    <div className="flex overflow-x-auto gap-3 px-4 scrollbar-hide">
+    <div className="flex top-[8.7dvh] overflow-x-auto gap-3 px-4 scrollbar-hide">
       {categories.map((cat) => (
         <button
           key={cat}
