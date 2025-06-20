@@ -71,16 +71,17 @@ export default function MyArchivePage({ onLoginClick }) {
       <TopBar title="" onBack={() => window.history.back()} />
 
       {/* 타이틀 */}
-      <div className="px-4 pt-4 pb-3 border-b border-[#CCCCCC]">
+      <div className="px-4 pt-4">
         <div className="flex items-baseline space-x-2">
           <h2 className="text-[16px] font-semibold text-[#000000] mt-2">나의 아카이브</h2>
           <span className="text-[16px] font-medium text-[#999999]">·</span>
           <span className="text-[14px] font-medium text-[#999999]">{archives.length}</span>
         </div>
+        <hr className="border-t border-[#CCCCCC] my-3 mb-4" />
       </div>
 
       {/* 본문 */}
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-2">
         {Object.keys(groupedByYear)
           .sort((a, b) => b - a)
           .map((year) => (
