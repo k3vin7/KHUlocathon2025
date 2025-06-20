@@ -100,9 +100,9 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
       {/* 설정 */}
       <div className="mx-[5dvw] mt-[1dvh]">
         <p className="text-[#999] text-[1.6dvh] mb-[2dvh]">설정</p>
-        <p className="text-[1.9dvh] py-[1.5dvh] border-b border-gray-200">비밀번호 찾기</p>
-        <p className="text-[1.9dvh] py-[1.5dvh] border-b border-gray-200" onClick={handleLogout}>로그아웃</p>
-        <p className="text-[1.9dvh] py-[1.5dvh] border-b border-gray-200">탈퇴하기</p>
+        <p className="text-[1.9dvh] py-[1.5dvh]">비밀번호 찾기</p>
+        <p className="text-[1.9dvh] py-[1.5dvh]" onClick={handleLogout}>로그아웃</p>
+        <p className="text-[1.9dvh] py-[1.5dvh] text-red-500">탈퇴하기</p>
       </div>
 
       <MenuTabs isLoggedIn={isLoggedIn} onLoginClick={onLoginClick} />
