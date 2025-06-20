@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FaInstagram } from 'react-icons/fa';
 import { SiNaver } from 'react-icons/si';
 import ImageOverlay from './SMMapUI/ImageOverlay';
@@ -12,7 +12,35 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
   const [userInfo, setUserInfo] = useState(null);
   const [myUserId, setMyUserId] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null); // 오버레이 인덱스
+  const panelRef = useRef(null);
+  const startY = useRef(0);
+  const currentY = useRef(0);
+  const dragging = useRef(false);
 
+  const handleTouchStart = (e) => {
+    dragging.current = true;
+    startY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragging.current) return;
+    currentY.current = e.touches[0].clientY;
+    const deltaY = currentY.current - startY.current;
+    if (deltaY > 0) {
+      panelRef.current.style.transform = `translateY(${deltaY}px)`;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    dragging.current = false;
+    const deltaY = currentY.current - startY.current;
+
+    if (deltaY > 100) {
+      onToggleExpand();  // 패널 닫기
+    } else {
+      panelRef.current.style.transform = 'translateY(0)';
+    }
+  };
 
   const fetchArchives = async () => {
     try {
@@ -78,6 +106,11 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
   
       fetchUserInfo();
     }, [selectedIndex]);
+  useEffect(() => {
+    if (isExpanded && panelRef.current) {
+      panelRef.current.style.transform = 'translateY(0)';
+    }
+  }, [isExpanded]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -144,6 +177,10 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
 
   return (
     <div
+      ref={panelRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className={`absolute bottom-0 left-0 w-full bg-white 
         rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out z-40
