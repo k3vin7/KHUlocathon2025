@@ -13,44 +13,40 @@ export default function MenuTabs({ isLoggedIn = false, onLoginClick = () => {} }
 
   return (
     <div className="
-      fixed bottom-0 h-[8dvh] w-full px-[2dvh]
-     bg-white grid grid-cols-3
-      text-center items-center justify-center z-50
-      shadow-[0_-2px_4px_rgba(0,0,0,0.08)]"
-    >
-      <div
-        className="flex flex-col items-center justify-center"
-        onClick={() => navigate("/")}
-      >
+      fixed bottom-0 w-full py-[10px]
+      bg-white grid grid-cols-3
+      items-center justify-center text-center z-50
+      shadow-[0_-2px_4px_rgba(0,0,0,0.08)]
+    ">
+      {/* 지도 탭 */}
+      <div className="flex flex-col items-center space-y-[4px]" onClick={() => navigate("/")}>
         <img
           src={path === "/" ? CoMapButton : MapButton}
-          className="h-[5dvh]"
+          className="h-[24px]"
           alt="Map"
         />
       </div>
 
+      {/* 아카이브 탭 */}
       <div
-        className="flex flex-col items-center justify-center"
-        onClick={() => {
-          isLoggedIn ? navigate("/archive") : onLoginClick();
-        }}
+        className="flex flex-col items-center space-y-[4px]"
+        onClick={() => isLoggedIn ? navigate("/archive") : onLoginClick()}
       >
         <img
           src={path === "/archive" ? CoArchiveButton : ArchiveButton}
-          className="h-[5dvh]"
+          className="h-[24px]"
           alt="Archive"
         />
       </div>
 
+      {/* 마이페이지 탭 */}
       <div
-        className="flex flex-col items-center justify-center"
-        onClick={() => {
-          isLoggedIn ? navigate("/mypage") : onLoginClick();
-        }}
+        className="flex flex-col items-center space-y-[4px]"
+        onClick={() => isLoggedIn ? navigate("/mypage") : onLoginClick()}
       >
         <img
           src={path === "/mypage" ? CoMyPageButton : MyPageButton}
-          className="h-[5dvh]"
+          className="h-[24px]"
           alt="MyPage"
         />
       </div>
