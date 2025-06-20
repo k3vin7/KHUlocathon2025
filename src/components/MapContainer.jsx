@@ -3,14 +3,29 @@ import LocateButton from './LocateButton';
 import MyPage from './MyPage';
 import PlaceDetailPanel from './PlaceDetailPanel';
 import CurrentPosition from './CurrentPosition';
+import MapUIContainer from './SMMapUI/MapUIContainer'; // ✅ 파일 이름에 맞게 수정
+import TopBar from './SMMapUI/TopBar';
 
 export default function MapContainer({ showMyPage, setShowMyPage, userData, onLogout }) {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
+  const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [category, setCategory] = useState('전체'); // ✅ 카테고리 상태 포함
   const markersRef = useRef([]);
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const matchesCategory = (place, selected) => {
+    const cat = place.category || '';
+    if (selected === '전체') return true;
+    if (selected === '음식점') return cat.includes('식당');
+    if (selected === '카페') return cat.includes('카페');
+    if (selected === '상점') return cat.includes('상점');
+    if (selected === '동물병원') return cat.includes('동물병원');
+    if (selected === '주점') return cat.includes('펍') || cat.includes('술집');
+    return false;
+  };
 
   useEffect(() => {
     const isMobile = window.innerWidth <= 640;
@@ -32,7 +47,57 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         setIsExpanded(false);
       });
 
-      // ✅ CustomOverlay 클래스 정의
+      try {
+        const res = await fetch(`${API_URL}/places`);
+        const data = await res.json();
+        setPlaces(data);
+      } catch (err) {
+        console.error('장소 목록 오류:', err);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!map) return;
+
+    // 기존 마커 제거
+    markersRef.current.forEach(({ marker, overlay }) => {
+      marker.setMap(null);
+      overlay.setMap(null);
+    });
+    markersRef.current = [];
+
+    const filtered = places.filter((p) => matchesCategory(p, category));
+
+    filtered.forEach((place) => {
+      if (!place.coordinates) return;
+
+      const latLng = new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
+
+      const marker = new window.naver.maps.Marker({
+        position: latLng,
+        map,
+        icon: {
+          url: '/marker.png',
+          size: new naver.maps.Size(40, 40),
+          scaledSize: new naver.maps.Size(40, 40),
+        },
+        title: place.name,
+      });
+
+      const overlayContent = document.createElement('div');
+      overlayContent.innerHTML = `
+        <div class="relative w-max max-w-[200px]">
+          <div class="bg-[#2B1D18B2] text-white rounded-xl px-[20px] py-[12px] text-sm leading-relaxed shadow-md">
+            <div class="font-bold text-base">${place.name}</div>
+            <div>${place.summary || place.detail || '정보 없음'}</div>
+          </div>
+          <div class="absolute left-1/2 -translate-x-1/2 w-0 h-0 
+                      border-l-8 border-r-8 border-t-[10px] 
+                      border-l-transparent border-r-transparent border-t-[#2B1D18B2]"></div>
+        </div>
+      `;
+
       class CustomOverlay extends window.naver.maps.OverlayView {
         constructor(position, content) {
           super();
@@ -58,116 +123,54 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         }
       }
 
-      // ✅ 장소 목록 불러오기
-      let places = [];
-      try {
-        const res = await fetch(`${API_URL}/places`);
-        places = await res.json();
-      } catch (err) {
-        console.error('장소 목록 오류:', err);
-      }
+      const overlay = new CustomOverlay(latLng, overlayContent);
+      markersRef.current.push({ marker, overlay });
 
-                                                                                                        // ✅ 개발용 기본 마커 추가
-      {/*const defaultPlace = {
-        _id: 'default-static-place',
-        name: '기본 테스트 장소',
-        summary: '이 마커는 항상 존재합니다.',
-        detail: '애견 동반 가능. 음식 없음.',
-        description: '이곳은 개발용으로 생성된 기본 장소입니다.이곳은 개발용으로 생성된 기본 장소입니다.',
-        category: '기타',
-        address: '경기도 용인시 어디쯤',
-        hours: '00:00~24:00;항상 열려 있음',
-        photos: ['/default.jpg'],
-        naverUrl: 'https://map.naver.com/',
-        instagram: 'https://instagram.com/',
-        coordinates: { lat: 37.2855, lng: 127.0130 },
+      const showPlaceDetail = async () => {
+        const offsetLat = place.coordinates.lat - 0.0003;
+        const targetLatLng = new naver.maps.LatLng(offsetLat, place.coordinates.lng);
+        map.morph(targetLatLng, 19, true);
+
+        try {
+          const res = await fetch(`${API_URL}/places/${place._id}`);
+          const detailedPlace = await res.json();
+          setSelectedPlace(detailedPlace);
+        } catch (err) {
+          console.error('장소 상세 정보 오류:', err);
+        }
+
+        setIsExpanded(true);
       };
-      places.unshift(defaultPlace);
-      */}
 
-      // ✅ 마커 및 오버레이 생성
-      places.forEach((place) => {
-        if (!place.coordinates) return;
+      marker.addListener('click', showPlaceDetail);
+      overlayContent.addEventListener('click', showPlaceDetail);
+    });
 
-        const latLng = new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
-
-        const marker = new window.naver.maps.Marker({
-          position: latLng,
-          map: mapInstance,
-          icon: {
-            url: '/marker.png',
-            size: new naver.maps.Size(40, 40),
-            scaledSize: new naver.maps.Size(40, 40),
-          },
-          title: place.name,
-        });
-
-        const overlayContent = document.createElement('div');
-        overlayContent.innerHTML = `
-          <div class="relative w-max max-w-[200px]">
-            <div class="bg-[#2B1D18B2] text-white rounded-xl px-[20px] py-[12px] text-sm leading-relaxed shadow-md">
-              <div class="font-bold text-base">${place.name}</div>
-              <div>${place.summary || place.detail || '정보 없음'}</div>
-            </div>
-            <div class="absolute left-1/2 -translate-x-1/2 w-0 h-0 
-                        border-l-8 border-r-8 border-t-[10px] 
-                        border-l-transparent border-r-transparent border-t-[#2B1D18B2]"></div>
-          </div>
-        `;
-
-        const overlay = new CustomOverlay(latLng, overlayContent);
-        markersRef.current.push({ marker, overlay });
-
-        const showPlaceDetail = async () => {
-          if (mapRef.current) {
-            const map = mapRef.current;
-            const original = place.coordinates;
-
-            const offsetLat = original.lat -0.0003;
-            const targetLatLng = new naver.maps.LatLng(offsetLat, original.lng);
-
-            const targetZoom = 19;
-            map.morph(targetLatLng, targetZoom, true);
-          }
-
-          setSelectedPlace(place);
-          setIsExpanded(true);
-
-                                                                                                          // 개발용 기본 마커는 fetch 생략
-          // if (place._id === 'default-static-place') return;
-
-          try {
-            const res = await fetch(`${API_URL}/places/${place._id}`);
-            const detailedPlace = await res.json();
-            setSelectedPlace(detailedPlace);
-          } catch (err) {
-            console.error('장소 상세 정보 오류:', err);
-          }
-        };
-
-        window.naver.maps.Event.addListener(marker, 'click', showPlaceDetail);
-        overlayContent.addEventListener('click', showPlaceDetail);
+    map.addListener('zoom_changed', () => {
+      const zoom = map.getZoom();
+      markersRef.current.forEach(({ marker, overlay }) => {
+        if (zoom >= 19) {
+          marker.setMap(null);
+          overlay.setMap(map);
+        } else {
+          overlay.setMap(null);
+          marker.setMap(map);
+        }
       });
-
-      // ✅ 줌 이벤트에 따른 마커/오버레이 전환
-      window.naver.maps.Event.addListener(mapInstance, 'zoom_changed', () => {
-        const zoom = mapInstance.getZoom();
-        markersRef.current.forEach(({ marker, overlay }) => {
-          if (zoom >= 19) {
-            marker.setMap(null);
-            overlay.setMap(mapInstance);
-          } else {
-            overlay.setMap(null);
-            marker.setMap(mapInstance);
-          }
-        });
-      });
-    };
-  }, []);
+    });
+  }, [map, places, category]);
 
   return (
     <div className="relative w-screen h-[100dvh] overflow-y-hidden">
+      <TopBar title="댕궁지도" />
       <div id="map" className="w-full h-full" />
+
+      <MapUIContainer
+        isLoggedIn={!!userData}
+        onLoginClick={() => setShowMyPage(true)}
+        category={category}
+        setCategory={setCategory}
+      />
 
       {map && <CurrentPosition map={map} />}
       {map && <LocateButton map={map} />}
