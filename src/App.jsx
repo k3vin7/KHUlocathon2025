@@ -9,6 +9,25 @@ import LoadingPage from './components/LoadingPage';
 import LoginPage from './components/LoginPage';
 import MyPage from './components/MyPage';
 import ArchivePage from './components/ArchivePage';
+import MenuTabs from './components/SMMapUI/MenuTabs';
+
+function MainPage({ isMobile, isLoggedIn, onLoginClick }) {
+  return (
+    <>
+      {isMobile ? (
+        <SMMapUIContainer
+          isLoggedIn={isLoggedIn}
+          onLoginClick={onLoginClick}
+        />
+      ) : (
+        <PCMapUIContainer
+          isLoggedIn={isLoggedIn}
+          onLoginClick={onLoginClick}
+        />
+      )}
+    </>
+  );
+}
 import MyArchivePage from './components/MyArchivePage';
 
 function App() {
@@ -76,22 +95,20 @@ function App() {
           path="/"
           element={
             <div>
-              {isMobile ? (
-                <SMMapUIContainer
-                  isLoggedIn={isLoggedIn}
-                  onLoginClick={() => setShowLogin(true)}
-                />
-              ) : (
-                <PCMapUIContainer
-                  isLoggedIn={isLoggedIn}
-                  onLoginClick={() => setShowLogin(true)}  // ✅ onLoginClick 전달 완료
-                />
-              )}
+              <MainPage
+                isMobile={isMobile}
+                isLoggedIn={isLoggedIn}
+                onLoginClick={() => setShowLogin(true)}
+              />
               <MapContainer
                 userData={userData}
                 onLogout={handleLogout}
                 showMyPage={false}
                 setShowMyPage={() => {}}
+                onLoginClick={() => setShowLogin(true)}
+              />
+              <MenuTabs
+                isLoggedIn={isLoggedIn}
                 onLoginClick={() => setShowLogin(true)}
               />
             </div>
@@ -100,17 +117,30 @@ function App() {
         <Route
           path="/mypage"
           element={
-            <MyPage
-              userData={userData}
-              onLogout={handleLogout}
-              onLoginClick={() => setShowLogin(true)}
-            />
+            <div>
+              <MyPage
+                userData={userData}
+                onLogout={handleLogout}
+                onLoginClick={() => setShowLogin(true)}
+                isLoggedIn={isLoggedIn}
+              />
+              <MenuTabs
+                isLoggedIn={isLoggedIn}
+                onLoginClick={() => setShowLogin(true)}
+              />
+            </div>
           }
         />
         <Route
           path="/archive"
           element={
-            <ArchivePage onLoginClick={() => setShowLogin(true)} />
+            <div>
+              <ArchivePage onLoginClick={() => setShowLogin(true)} />
+              <MenuTabs
+                isLoggedIn={isLoggedIn}
+                onLoginClick={() => setShowLogin(true)}
+              />
+            </div>
           }
         />
         <Route

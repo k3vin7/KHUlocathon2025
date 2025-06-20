@@ -6,7 +6,7 @@ import CoArchiveButton from "../../assets/CoArchiveButton.png";
 import MyPageButton from "../../assets/MyPageButton.png";
 import CoMyPageButton from "../../assets/CoMyPageButton.png";
 
-export default function MenuTabs({ isLoggedIn, onLoginClick }) {
+export default function MenuTabs({ isLoggedIn = false, onLoginClick = () => {} }) {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
@@ -17,7 +17,6 @@ export default function MenuTabs({ isLoggedIn, onLoginClick }) {
       bg-white grid grid-cols-3
       text-center items-center justify-center z-50"
     >
-      {/* 맵 */}
       <div
         className="flex flex-col items-center justify-center"
         onClick={() => navigate("/")}
@@ -29,7 +28,6 @@ export default function MenuTabs({ isLoggedIn, onLoginClick }) {
         />
       </div>
 
-      {/* 아카이브 */}
       <div
         className="flex flex-col items-center justify-center"
         onClick={() => {
@@ -43,7 +41,6 @@ export default function MenuTabs({ isLoggedIn, onLoginClick }) {
         />
       </div>
 
-      {/* 마이페이지 */}
       <div
         className="flex flex-col items-center justify-center"
         onClick={() => {
