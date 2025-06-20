@@ -31,7 +31,18 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
     if (selected === '주점') return cat.includes('펍') || cat.includes('술집');
     return false;
   };
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscroll = document.body.style.overscrollBehavior;
 
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'none'; // 당겨서 새로고침 방지
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscroll;
+    };
+  }, []);
   useEffect(() => {
     const isMobile = window.innerWidth <= 1500;
     const script = document.createElement('script');
@@ -234,7 +245,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   return (
     <div className="relative w-screen h-[100dvh] overflow-y-hidden">
       <TopBar title="댕궁지도" />
-      <div id="map" className="w-full h-full" />
+      <div id="map" className="w-full h-full absolute " />
 
       <MapUIContainer
         isLoggedIn={!!userData}

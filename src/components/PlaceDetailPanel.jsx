@@ -107,8 +107,8 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       fetchUserInfo();
     }, [selectedIndex]);
   useEffect(() => {
-    if (isExpanded && panelRef.current) {
-      panelRef.current.style.transform = 'translateY(0)';
+  if (isExpanded && panelRef.current) {
+    panelRef.current.style.transform = 'translateY(0)';
     }
   }, [isExpanded]);
 
