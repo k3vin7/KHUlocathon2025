@@ -62,15 +62,16 @@ export default function AllArchivePage({ onLoginClick }) {
     <div className="pb-16">
       <TopBar title="" onBack={() => window.history.back()} />
 
-      <div className="px-4 pt-4 pb-3 border-b border-[#CCCCCC]">
+      <div className="px-4 pt-4">
         <div className="flex items-baseline space-x-2">
           <h2 className="text-[16px] font-semibold text-[#000000] mt-2">전체 아카이브</h2>
           <span className="text-[16px] font-medium text-[#999999]">·</span>
           <span className="text-[14px] font-medium text-[#999999]">{archives.length}</span>
         </div>
+        <hr className="border-t border-[#CCCCCC] my-3 mb-4" />
       </div>
 
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-2">
         {Object.keys(groupedByYear)
           .sort((a, b) => b - a)
           .map((year) => (
