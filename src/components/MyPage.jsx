@@ -17,16 +17,20 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
   };
 
   const getLevelInfo = (count) => {
-    if (count >= 20) return { level: '마스터', next: null, max: 20 };
-    if (count >= 11) return { level: '전문가', next: 20, max: 20 };
-    if (count >= 6) return { level: '탐험가', next: 11, max: 11 };
-    return { level: '입문자', next: 6, max: 6 };
+    if (count >= 20) return { level: '마스터', next: null, min: 20, max: 20 };
+    if (count >= 11) return { level: '전문가', next: 20, min: 11, max: 20 };
+    if (count >= 6) return { level: '탐험가', next: 11, min: 6, max: 11 };
+    return { level: '입문자', next: 6, min: 0, max: 6 };
   };
 
-  const stampCount = userData.stampCount || 0;
+  const stampCount = Number(userData.stampCount) || 0;
   const levelInfo = getLevelInfo(stampCount);
   const current = Math.min(stampCount, levelInfo.max);
-  const progress = (current / levelInfo.max) * 100;
+
+  const progress =
+    levelInfo.max === levelInfo.min
+      ? 100
+      : ((stampCount - levelInfo.min) / (levelInfo.max - levelInfo.min)) * 100;
 
   const badgeImages = [starter, explorer, expert, master];
   const levelLabels = ['입문자', '탐험가', '전문가', '마스터'];
@@ -57,7 +61,7 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
       <div className="flex flex-col mx-[5dvw] p-[2dvh] bg-[#CCCCCC]/20 rounded-xl">
         <p className="text-[1.5dvh] text-center mb-[2dvh]">
           {levelInfo.next
-            ? `${levelInfo.next - stampCount}곳 더 방문하면 ${levelLabels[levelLabels.indexOf(levelInfo.level) + 1]}!`
+            ? `[${levelLabels[levelLabels.indexOf(levelInfo.level) + 1]}] 레벨까지 ${levelInfo.next - stampCount}개 남았어요!`
             : "최고 레벨인 마스터에 도달했어요!"}
         </p>
 
@@ -69,8 +73,7 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
                 key={idx}
                 src={src}
                 className={`h-[5dvh] w-[5dvh] object-cover rounded-full
-              border-2
-              ${isActive ? 'grayscale-0 border-[#FF6100]' : 'grayscale'}`}
+                border-2 ${isActive ? 'grayscale-0 border-[#FF6100]' : 'grayscale border-transparent'}`}
               />
             );
           })}
@@ -90,12 +93,14 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
           />
         </div>
         <p className="text-right text-[1.4dvh] text-[#999] mt-[0.5dvh]">
-          {`${current} / ${levelInfo.max}`}
+          {levelInfo.max === levelInfo.min
+            ? "마스터 달성"
+            : `${stampCount - levelInfo.min} / ${levelInfo.max - levelInfo.min}`}
         </p>
       </div>
 
       {/* 구분선 */}
-      <hr className="mx-[5dvw] my-[3dvh] border-t-[1px] border-#E2E2E2" />
+      <hr className="mx-[5dvw] my-[3dvh] border-t-[1px] border-[#E2E2E2]" />
 
       {/* 설정 */}
       <div className="mx-[5dvw] mt-[1dvh]">
