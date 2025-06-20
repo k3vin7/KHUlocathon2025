@@ -29,6 +29,7 @@ function MainPage({ isMobile, isLoggedIn, onLoginClick }) {
   );
 }
 import MyArchivePage from './components/MyArchivePage';
+import AllArchivePage from './components/AllArchivePage';
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -147,6 +148,12 @@ function App() {
           path="/archive/mine"
           element={
             <MyArchivePage onLoginClick={() => setShowLogin(true)} />
+          }
+        />
+        <Route
+          path="/archive/all"
+          element={
+            <AllArchivePage onLoginClick={() => setShowLogin(true)} />
           }
         />
       </Routes>
