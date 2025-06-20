@@ -3,16 +3,17 @@ import LocateButton from './LocateButton';
 import MyPage from './MyPage';
 import PlaceDetailPanel from './PlaceDetailPanel';
 import CurrentPosition from './CurrentPosition';
-import MapUIContainer from './SMMapUI/MapUIContainer'; // ✅ 파일 이름에 맞게 수정
+import MapUIContainer from './SMMapUI/MapUIContainer';
 import TopBar from './SMMapUI/TopBar';
 
 export default function MapContainer({ showMyPage, setShowMyPage, userData, onLogout }) {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [places, setPlaces] = useState([]);
+  const walkCircleRef = useRef(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [category, setCategory] = useState('전체'); // ✅ 카테고리 상태 포함
+  const [category, setCategory] = useState('전체');
   const markersRef = useRef([]);
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -23,6 +24,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
     if (selected === '카페') return cat.includes('카페');
     if (selected === '상점') return cat.includes('상점');
     if (selected === '동물병원') return cat.includes('동물병원');
+    if (selected === '산책코스') return cat.includes('산책코스');
     if (selected === '주점') return cat.includes('펍') || cat.includes('술집');
     return false;
   };
@@ -60,7 +62,6 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   useEffect(() => {
     if (!map) return;
 
-    // 기존 마커 제거
     markersRef.current.forEach(({ marker, overlay }) => {
       marker.setMap(null);
       overlay.setMap(null);
@@ -70,7 +71,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
     const filtered = places.filter((p) => matchesCategory(p, category));
 
     filtered.forEach((place) => {
-      if (!place.coordinates) return;
+      if (!place.coordinates || place.category === '산책코스') return;
 
       const latLng = new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
 
@@ -127,6 +128,12 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
       markersRef.current.push({ marker, overlay });
 
       const showPlaceDetail = async () => {
+        // ✅ 기존 원 제거
+        if (walkCircleRef.current) {
+          walkCircleRef.current.setMap(null);
+          walkCircleRef.current = null;
+        }
+
         const offsetLat = place.coordinates.lat - 0.0003;
         const targetLatLng = new naver.maps.LatLng(offsetLat, place.coordinates.lng);
         map.morph(targetLatLng, 19, true);
@@ -159,6 +166,62 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
       });
     });
   }, [map, places, category]);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const walkPlaces = places.filter((p) => p.category === '산책코스' && p.coordinates);
+
+    walkPlaces.forEach((place) => {
+      const latLng = new window.naver.maps.LatLng(place.coordinates.lat, place.coordinates.lng);
+
+      const marker = new window.naver.maps.Marker({
+        position: latLng,
+        map,
+        icon: {
+          url: '/marker.png',
+          size: new naver.maps.Size(40, 40),
+          scaledSize: new naver.maps.Size(40, 40),
+        },
+        title: place.name,
+      });
+
+      marker.addListener('click', () => {
+  if (walkCircleRef.current) {
+    walkCircleRef.current.setMap(null);
+    walkCircleRef.current = null;
+  }
+
+  map.morph(latLng, 18, true); // ✅ 자연스럽게 확대
+
+  const idleListener = window.naver.maps.Event.addListener(map, 'idle', () => {
+    const circle = new window.naver.maps.Circle({
+      map,
+      center: latLng,
+      radius: Number(place.radius) || 300,
+      strokeColor: '#FF6600',
+      strokeOpacity: 0.7,
+      strokeWeight: 2,
+      fillColor: '#FFB266',
+      fillOpacity: 0.3,
+      clickable: false,
+      zIndex: 1,
+    });
+    console.log('반지름 확인:', place.radius, typeof place.radius);
+
+    walkCircleRef.current = circle;
+
+    setTimeout(() => {
+      setSelectedPlace(place);
+      setIsExpanded(true);
+    }, 50);
+
+    window.naver.maps.Event.removeListener(idleListener);
+  });
+});
+
+    });
+  }, [map, places]);
 
   return (
     <div className="relative w-screen h-[100dvh] overflow-y-hidden">
