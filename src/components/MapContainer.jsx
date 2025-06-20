@@ -134,7 +134,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           walkCircleRef.current = null;
         }
 
-        const offsetLat = place.coordinates.lat - 0.0003;
+        const offsetLat = place.coordinates.lat - 0.0005;
         const targetLatLng = new naver.maps.LatLng(offsetLat, place.coordinates.lng);
         map.morph(targetLatLng, 19, true);
 

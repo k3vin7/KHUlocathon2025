@@ -30,41 +30,53 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
       <TopBar title="마이페이지" />
 
       {/* 회원 정보 */}
-      <div className="relative flex flex-col mx-[24px] my-[32px]">
-        <h1 className="mb-[24px] text-[#999999] text-[16px] leading-[140%] tracking-tight">회원 정보</h1>
-        <div className="flex items-center">
-          <img src={badgeSrc} className="h-[6.9dvh] aspect-square" />
-          <div className="w-full h-full grid grid-rows-2 ml-[16px]">
-            <div className="flex items-end">
-              <p className="text-[20px] font-medium leading-[140%] tracking-tight">{userData.nickname}</p>
-            </div>
-            <div className="flex items-start">
-              <p className="text-[16px] text-[#999999] leading-[140%] tracking-tight">{userData.title || '없음'}</p>
+      <div className="flex flex-col mx-[5dvw] my-[3dvh]">
+        <h2 className="text-[#999] text-[1.6dvh] mb-[2dvh]">회원 정보</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <img src={badgeSrc} className="h-[6.5dvh] w-[6.5dvh] rounded-full" />
+            <div className="ml-[3dvw]">
+              <p className="text-[2.3dvh] font-medium">{userData.nickname}</p>
+              <p className="text-[1.8dvh] text-[#999]">{userData.title}</p>
             </div>
           </div>
-          <div className="w-[10dvh] h-full grid grid-rows-2 items-center">
-            <span className="text-[16px] text-[#999999] leading-[140%] tracking-tight underline pl-2">수정</span>
-          </div>
+          <span className="underline text-[1.7dvh] text-[#999] pr-[1dvw]">수정</span>
         </div>
       </div>
 
       {/* 진척도 박스 */}
-      <div className="relative flex flex-col mx-[24px] bg-[#CCCCCC]/10 rounded-xl p-4">
-        <p className="text-[12px] text-center">n 번 더 사진을 업로드하면 댕궁동 탐험가!</p>
-        <div className="mt-[2.3dvh] grid grid-cols-4 gap-2 justify-items-center">
-          <img src={starter} className="h-[5vh]" />
-          <img src={explorer} className="h-[5vh]" />
-          <img src={expert} className="h-[5vh]" />
-          <img src={master} className="h-[5vh]" />
+      <div className="flex flex-col mx-[5dvw] p-[2dvh] bg-[#CCCCCC]/20 rounded-xl">
+        <p className="text-[1.5dvh] text-center mb-[2dvh]">
+          {`${6 - (userData.stampcount || 0)}번 더 사진을 업로드하면 댕궁동 탐험가!`}
+        </p>
+        <div className="grid grid-cols-4 gap-[2dvw] justify-items-center mb-[1dvh]">
+          <img src={starter} className="h-[5dvh]" />
+          <img src={explorer} className="h-[5dvh]" />
+          <img src={expert} className="h-[5dvh]" />
+          <img src={master} className="h-[5dvh]" />
         </div>
+        <div className="flex justify-between mt-[1dvh] px-[1dvw]">
+          <span className="text-[1.4dvh] text-orange-500">댕궁동 입문자</span>
+          <span className="text-[1.4dvh] text-[#999]">댕궁동 탐험가</span>
+        </div>
+        <div className="h-[1dvh] mt-[0.8dvh] bg-[#eee] rounded-full">
+          <div
+            className="h-full bg-orange-400 rounded-full transition-all"
+            style={{ width: `${(userData.reviewCount || 0) / 6 * 100}%` }}
+          />
+        </div>
+        <p className="text-right text-[1.4dvh] text-[#999] mt-[0.5dvh]">{`${userData.reviewCount || 0} / 6`}</p>
       </div>
 
-      <button
-        onClick={handleLogout}
-        className="w-full bg-red-500 hover:bg-red-600 text-white py-2 mt-6 rounded text-sm mx-auto max-w-xs block"
-      >
-        로그아웃
-      </button>
+      <hr className="mx-[5dvw] my-[3dvh] border-t-[1px] border-[#E2E2E2]/50" />
+
+      {/* 설정 */}
+      <div className="mx-[5dvw] mt-[4dvh]">
+        <h2 className="text-[#999] text-[1.6dvh] mb-[2dvh]">설정</h2>
+        <p className="text-[1.9dvh] py-[1.5dvh]">비밀번호 찾기</p>
+        <p className="text-[1.9dvh] py-[1.5dvh]" onClick={handleLogout}>로그아웃</p>
+        <p className="text-[1.9dvh] py-[1.5dvh] text-red-500">탈퇴하기</p>
+      </div>
 
       <MenuTabs isLoggedIn={isLoggedIn} onLoginClick={onLoginClick} />
     </div>
