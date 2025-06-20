@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopBar from "../components/SMMapUI/TopBar";
 import MenuTabs from './SMMapUI/MenuTabs';
+import unknownImg from '../assets/unknownImg.png';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -48,7 +49,10 @@ export default function ArchivePage({ onLoginClick }) {
       <div> {/* 전체 좌우 여백 */}
         <div className="flex gap-1">
           {/* 왼쪽 큰 이미지 */}
-          <div className="flex-1 aspect-square">
+          <div
+            className="flex-1 aspect-square"
+            onClick={() =>navigate(targetPage)}
+          >
             <img
               src={bigPhoto?.photoUrl}
               alt="big"
@@ -64,12 +68,12 @@ export default function ArchivePage({ onLoginClick }) {
                 <div 
                   key={i}
                   className="relative aspect-square curser-pointer"
-                  onClick={() => isLast && navigate(targetPage)}
+                  onClick={() =>navigate(targetPage)}
                 >
                   <img
                     src={photo.photoUrl}
                     alt={`small-${i}`}
-                    className={`w-full h-full object-cover ${isLast ? 'grayscale brightness-75' : ''}`}
+                    className={`w-full h-full object-cover ${isLast ? 'brightness-75' : ''}`}
                   />
                   {isLast && (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -98,8 +102,8 @@ export default function ArchivePage({ onLoginClick }) {
         </div>
         {/* 이미지 레이아웃 */}
         {myArchives.length === 0 ? (
-          <div className="w-full h-40 bg-gray-200 flex justify-center items-center rounded">
-            <img src="/empty-image-icon.png" alt="empty" className="w-10 h-10 opacity-50" />
+          <div className="w-[50%] aspect-square overflow-hidden flex justify-center items-center">
+            <img src={unknownImg} alt="empty" className="w-50 h-50 opacity-50" />
           </div>
         ) : (
           getLayout(myArchives, myArchives.length - 5, '/archive/mine')
@@ -119,7 +123,7 @@ export default function ArchivePage({ onLoginClick }) {
         </p>
         {allArchives.length === 0 ? (
           <div className="w-full h-40 bg-gray-200 flex justify-center items-center rounded">
-            <img src="/empty-image-icon.png" alt="empty" className="w-10 h-10 opacity-50" />
+            <img src={unknownImg} alt="empty" className="w-10 h-10 opacity-50" />
           </div>
         ) : (
           getLayout(allArchives, allArchives.length - 5, '/archive/all')
