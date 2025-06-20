@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export default function CurrentPosition({ map }) {
-  const [position, setPosition] = useState(null);
+export default function CurrentPosition({ map, setCurrentPosition }) {
   const [marker, setMarker] = useState(null);
 
   useEffect(() => {
@@ -10,7 +9,9 @@ export default function CurrentPosition({ map }) {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         const newPos = new window.naver.maps.LatLng(lat, lng);
-        setPosition(newPos);
+
+        // 부모에게 현재 위치 전달
+        setCurrentPosition({ lat, lng });
 
         if (map) {
           if (!marker) {
@@ -38,5 +39,5 @@ export default function CurrentPosition({ map }) {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [map, marker]);
 
-  return null; // UI 없고 마커만 표시됨
+  return null;
 }

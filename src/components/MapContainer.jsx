@@ -16,6 +16,8 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   const [isExpanded, setIsExpanded] = useState(false);
   const [category, setCategory] = useState('전체');
   const markersRef = useRef([]);
+  const [currentPosition, setCurrentPosition] = useState(null);
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   const matchesCategory = (place, selected) => {
@@ -239,8 +241,9 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         setCategory={setCategory}
       />
 
-      {map && <CurrentPosition map={map} />}
-      {map && <LocateButton map={map} />}
+      {map && <CurrentPosition map={map} setCurrentPosition={setCurrentPosition} />}
+      {map && <LocateButton map={map} currentPosition={currentPosition} />}
+
 
       {selectedPlace && (
         <PlaceDetailPanel
