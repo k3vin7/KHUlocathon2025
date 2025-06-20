@@ -68,7 +68,9 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
               <img
                 key={idx}
                 src={src}
-                className={`h-[5dvh] ${isActive ? 'grayscale-0' : 'grayscale'}`}
+                className={`h-[5dvh] w-[5dvh] object-cover rounded-full
+              border-2
+              ${isActive ? 'grayscale-0 border-[#FF6100]' : 'grayscale'}`}
               />
             );
           })}
@@ -96,8 +98,6 @@ export default function MyPage({ userData, onLogout, onLoginClick, isLoggedIn })
       <hr className="mx-[5dvw] my-[3dvh] border-t-[1px] border-#E2E2E2" />
 
       {/* 설정 */}
-      
-
       <div className="mx-[5dvw] mt-[1dvh]">
         <p className="text-[#999] text-[1.6dvh] mb-[2dvh]">설정</p>
         <p className="text-[1.9dvh] py-[1.5dvh] border-b border-gray-200">비밀번호 찾기</p>
