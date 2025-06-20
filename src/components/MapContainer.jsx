@@ -24,6 +24,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
     if (selected === '카페') return cat.includes('카페');
     if (selected === '상점') return cat.includes('상점');
     if (selected === '동물병원') return cat.includes('동물병원');
+    if (selected === '산책코스') return cat.includes('산책코스');
     if (selected === '주점') return cat.includes('펍') || cat.includes('술집');
     return false;
   };
@@ -178,7 +179,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
         position: latLng,
         map,
         icon: {
-          url: '/marker2.png',
+          url: '/marker.png',
           size: new naver.maps.Size(40, 40),
           scaledSize: new naver.maps.Size(40, 40),
         },
