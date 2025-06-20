@@ -17,7 +17,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   const [category, setCategory] = useState('전체');
   const markersRef = useRef([]);
   const [currentPosition, setCurrentPosition] = useState(null);
-
+  let currentZIndex = 100
   const API_URL = import.meta.env.VITE_API_URL;
 
   const matchesCategory = (place, selected) => {
@@ -135,11 +135,13 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           walkCircleRef.current.setMap(null);
           walkCircleRef.current = null;
         }
-
+        markersRef.current.forEach(({ overlay }) => {
+          overlay._element.style.zIndex = '100';
+        });
         const offsetLat = place.coordinates.lat - 0.00035;
         const targetLatLng = new naver.maps.LatLng(offsetLat, place.coordinates.lng);
         map.morph(targetLatLng, 19, true);
-
+        overlay._element.style.zIndex = '9999';
         try {
           const res = await fetch(`${API_URL}/places/${place._id}`);
           const detailedPlace = await res.json();
