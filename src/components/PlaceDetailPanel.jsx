@@ -156,7 +156,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       <div className="px-[7dvw]">
         <div className="flex items-start">
           <h3 className="text-[20px] font-bold">{place.name}</h3>
-          <p className="ml-2 text-[12px] text-[#999999] pt-1">{place.category || '카테고리 없음'}</p>
+          <p className="ml-2 min-w-[45px] text-[12px] text-[#999999] pt-1">{place.category || '카테고리 없음'}</p>
         </div>
         <p className="text-black text-sm leading-snug mt-1">
           {place.description || place.detail || place.summary || '설명 정보 없음'}
