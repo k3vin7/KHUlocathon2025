@@ -1,6 +1,5 @@
 import MenuTabs from "./MenuTabs";
 import POIFilterTabs from "./POIFilterTabs";
-import TopBar from "./TopBar";
 
 export default function MapUIContainer({ isLoggedIn, onLoginClick, category, setCategory }) {
   return (

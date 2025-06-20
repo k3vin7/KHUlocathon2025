@@ -31,7 +31,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
   };
 
   useEffect(() => {
-    const isMobile = window.innerWidth <= 640;
+    const isMobile = window.innerWidth <= 1500;
     const script = document.createElement('script');
     script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_KEY_ID}`;
     script.async = true;

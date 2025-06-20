@@ -1,13 +1,13 @@
-import logo from "../../assets/logo.png"
-import POIFilterTabs from "./POIFilterTabs"
-import MenuTabs from "../SMMapUI/MenuTabs";
+import MenuTabs from "./MenuTabs";
+import POIFilterTabs from "./POIFilterTabs";
 
-export default function MapUIContainer({ isLoggedIn, onLoginClick }) {
+export default function MapUIContainer({ isLoggedIn, onLoginClick, category, setCategory }) {
   return (
-    <div className="absolute top-0 left-0 w-[80px] h-full bg-white z-10 shadow">
-        <img src={ logo }/>
-        <POIFilterTabs /> 
-        <MenuTabs isLoggedIn={isLoggedIn} onLoginClick={onLoginClick} />
+    <div>
+      <div className="absolute top-[60px] left-0 w-full z-10 p-2">
+        <POIFilterTabs category={category} setCategory={setCategory} />
+      </div>
+      <MenuTabs isLoggedIn={isLoggedIn} onLoginClick={onLoginClick} />
     </div>
   );
 }
