@@ -86,7 +86,7 @@ export default function MyArchivePage({ onLoginClick }) {
           .sort((a, b) => b - a)
           .map((year) => (
             <div key={year}>
-              <h3 className="text-[12px] font-medium text-[#999999] mb-2">{year}</h3>
+              <h3 className="text-[14px] font-medium text-[#999999] mb-2">{year}</h3>
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {groupedByYear[year].map((item, idx) => {
                   const globalIndex = archives.findIndex((a) => a._id === item._id);

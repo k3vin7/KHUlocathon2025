@@ -103,7 +103,7 @@ export default function ArchivePage({ onLoginClick }) {
         {/* 이미지 레이아웃 */}
         {myArchives.length === 0 ? (
           <div className="w-[50%] aspect-square overflow-hidden flex justify-center items-center">
-            <img src={unknownImg} alt="empty" className="w-50 h-50 opacity-50" />
+            <img src={unknownImg} alt="empty" className="w-full h-full opacity-50" />
           </div>
         ) : (
           getLayout(myArchives, myArchives.length - 5, '/archive/mine')
