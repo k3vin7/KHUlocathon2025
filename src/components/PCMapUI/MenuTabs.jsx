@@ -22,7 +22,7 @@ export default function MenuTabs({ isLoggedIn = false, onLoginClick = () => {} }
       <div className="flex flex-col items-center space-y-[4px]" onClick={() => navigate("/")}>
         <img
           src={path === "/" ? CoMapButton : MapButton}
-          className="h-[24px]"
+          className="h-[40px]"
           alt="Map"
         />
       </div>
@@ -34,7 +34,7 @@ export default function MenuTabs({ isLoggedIn = false, onLoginClick = () => {} }
       >
         <img
           src={path === "/archive" ? CoArchiveButton : ArchiveButton}
-          className="h-[24px]"
+          className="h-[40px]"
           alt="Archive"
         />
       </div>
@@ -46,7 +46,7 @@ export default function MenuTabs({ isLoggedIn = false, onLoginClick = () => {} }
       >
         <img
           src={path === "/mypage" ? CoMyPageButton : MyPageButton}
-          className="h-[24px]"
+          className="h-[40px]"
           alt="MyPage"
         />
       </div>
