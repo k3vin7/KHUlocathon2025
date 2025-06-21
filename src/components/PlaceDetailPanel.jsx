@@ -16,6 +16,49 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
   const startY = useRef(0);
   const currentY = useRef(0);
   const dragging = useRef(false);
+  const isClick = useRef(false);
+
+  const handleMouseDown = (e) =>{
+    dragging.current = true;
+    isClick.current = true;
+    startY.current = e.clientY;
+  };
+
+  const handleMouseMove = (e) =>{
+    if(!dragging.current) return;
+    currentY.current = e.clientY;
+    const deltaY = currentY.current - startY.current;
+    if(Math.abs(deltaY)>5) isClick.current = false;
+    if(deltaY > 0){
+      panelRef.current.style.transform = `translateY(${{deltaY}}px)`;
+    }
+  };
+
+  const handleMouseUp = () =>{
+    dragging.current = false;
+    const deltaY = currentY.current -startY.current;
+
+    if(isClick.current && Math.abs(deltaY) < 5) {
+      onToggleExpand();
+      return ;
+    }
+
+    if(isExpanded && deltaY > 50){
+      onToggleExpand();
+    }else if(!isExpanded && deltaY < -50){
+      onToggleExpand();
+    }else if (!isExpanded && deltaY > 50){
+      panelRef.current.style.transition = 'transform 0.3s ease';
+      panelRef.current.style.transform = 'translateT(100%)';
+      setTimeout(()=>{
+        onClose();
+      }, 300);
+    }else{
+      panelRef.current.style.transform = 'translateY(0)';
+    }
+
+    isClick.current=false;
+  };
 
   const handleTouchStart = (e) => {
     dragging.current = true;
@@ -124,6 +167,16 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    console.log(file.size);
+
+
+
+    const MAX_IMAGE_SIZE = 10*1024*1024;
+    if(file.size > MAX_IMAGE_SIZE){
+      alert("❌ 이미지 용량이 너무 큽니다. 최대 10MB 이하의 이미지만 업로드할 수 있습니다");
+      return;
+    }
+
     setPhotoFile(file);
 
     const token = localStorage.getItem('token');
@@ -197,6 +250,9 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         className="flex items-center justify-center h-[4dvh]"
       >
         <div className="w-[7.5dvw] h-[0.3dvh] bg-[#CCCCCC] rounded-full cursor-pointer" />
