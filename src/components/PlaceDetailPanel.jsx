@@ -35,9 +35,13 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
     dragging.current = false;
     const deltaY = currentY.current - startY.current;
 
-    if (deltaY > 100) {
+    if (isExpanded && deltaY > 50) {
       onToggleExpand();  // 패널 닫기
-    } else {
+    } else if(!isExpanded && deltaY < -50){
+      onToggleExpand();
+    }else if(!isExpanded && deltaY>50){
+      onClose();
+    }else{
       panelRef.current.style.transform = 'translateY(0)';
     }
   };
