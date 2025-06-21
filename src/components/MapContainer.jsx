@@ -275,7 +275,7 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           place={selectedPlace}
           isExpanded={isExpanded}
           onToggleExpand={() => setIsExpanded(!isExpanded)}
-          onClose={() => {
+          onClose={() =>{
             setIsExpanded(false);
             setSelectedPlace(null);
           }}
