@@ -10,6 +10,15 @@ export default function ArchivePage({ onLoginClick }) {
   const navigate = useNavigate();
   const [myArchives, setMyArchives] = useState([]);
   const [allArchives, setAllArchives] = useState([]);
+  const [isWide, setIsWide] = useState(window.innerWidth > window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsWide(window.innerWidth > window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchMyArchives = async () => {
@@ -46,12 +55,11 @@ export default function ArchivePage({ onLoginClick }) {
     const smallPhotos = archives.slice(1, 5); // 최대 4장
 
     return (
-      <div> {/* 전체 좌우 여백 */}
+      <div>
         <div className="flex gap-1">
-          {/* 왼쪽 큰 이미지 */}
           <div
             className="flex-1 aspect-square"
-            onClick={() =>navigate(targetPage)}
+            onClick={() => navigate(targetPage)}
           >
             <img
               src={bigPhoto?.photoUrl}
@@ -59,16 +67,14 @@ export default function ArchivePage({ onLoginClick }) {
               className="w-full h-full object-cover"
             />
           </div>
-
-          {/* 오른쪽 2x2 그리드 */}
           <div className="grid grid-cols-2 grid-rows-2 gap-1 w-[50%]">
             {smallPhotos.map((photo, i) => {
               const isLast = i === 3 && remainingCount > 0;
               return (
-                <div 
+                <div
                   key={i}
-                  className="relative aspect-square curser-pointer"
-                  onClick={() =>navigate(targetPage)}
+                  className="relative aspect-square cursor-pointer"
+                  onClick={() => navigate(targetPage)}
                 >
                   <img
                     src={photo.photoUrl}
@@ -89,47 +95,96 @@ export default function ArchivePage({ onLoginClick }) {
     );
   };
 
-
   return (
     <div>
-      <TopBar title = "댕궁동 아카이브" />
-      {/* 나의 아카이브 섹션 */}
-      <div className="mb-6 px-4">  {/* ← padding 추가 */}
-        <div className="flex items-center space-x-2 mb-2 mt-6">
-          <h3 className="text-[16px] font-semibold">나의 아카이브 </h3>
-          <span className="text-[16px] font-medium text-[#999999]">·</span>
-          <span className="text-[14px] font-medium text-[#999999]">{myArchives.length}</span>
-        </div>
-        {/* 이미지 레이아웃 */}
-        {myArchives.length === 0 ? (
-          <div className="w-[50%] aspect-square overflow-hidden flex justify-center items-center">
-            <img src={unknownImg} alt="empty" className="w-full h-full opacity-50" />
-          </div>
-        ) : (
-          getLayout(myArchives, myArchives.length - 5, '/archive/mine')
-        )}
-        <hr className="border-t border-[#CCCCCC] my-6" />
-      </div>
-        
-      {/* 댕궁동 아카이브 섹션 */}
-      <div className="px-4"> {/* ← 동일한 패딩 적용 */}
-        <div className="flex items-center space-x-2 mb-1">
-          <h3 className="text-[16px] font-semibold">댕궁동 아카이브</h3>
-          <span className="text-[16px] font-medium text-[#999999]">·</span>
-          <span className="text-[14px] font-medium text-[#999999]">{allArchives.length}</span>
-        </div>
-        <p className="text-sm text-gray-500 mt-1 mb-3">
-          반려인들이 댕궁동에서 남긴 추억들을 확인해보세요.
-        </p>
-        {allArchives.length === 0 ? (
-          <div className="w-full h-40 bg-gray-200 flex justify-center items-center rounded">
-            <img src={unknownImg} alt="empty" className="w-10 h-10 opacity-50" />
-          </div>
-        ) : (
-          getLayout(allArchives, allArchives.length - 5, '/archive/all')
-        )}
-      </div>
+      <TopBar title="댕궁동 아카이브" />
 
+      <div className={`px-4 ${isWide ? "flex gap-4 items-start" : ""}`}>
+        {isWide ? (
+          <>
+            {/* 나의 아카이브 */}
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-2 mt-6">
+                <h3 className="text-[16px] font-semibold">나의 아카이브</h3>
+                <span className="text-[16px] font-medium text-[#999999]">·</span>
+                <span className="text-[14px] font-medium text-[#999999]">{myArchives.length}</span>
+              </div>
+              <p className="text-sm text-gray-500 mt-1 mb-3">
+                당신과 함께 만들어간 추억들이에요!
+              </p>
+              {myArchives.length === 0 ? (
+                <div className="aspect-square overflow-hidden flex justify-center items-center">
+                  <img src={unknownImg} alt="empty" className="w-full h-full opacity-50" />
+                </div>
+              ) : (
+                getLayout(myArchives, myArchives.length - 5, '/archive/mine')
+              )}
+            </div>
+
+            {/* 구분선 */}
+            <div className="w-[1px] bg-black h-full mx-2 style={{ minHeight: '300px' }}"></div>
+
+            {/* 전체 아카이브 */}
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-1 mt-6">
+                <h3 className="text-[16px] font-semibold">댕궁동 아카이브</h3>
+                <span className="text-[16px] font-medium text-[#999999]">·</span>
+                <span className="text-[14px] font-medium text-[#999999]">{allArchives.length}</span>
+              </div>
+              <p className="text-sm text-gray-500 mt-1 mb-3">
+                반려인들이 댕궁동에서 남긴 추억들을 확인해보세요.
+              </p>
+              {allArchives.length === 0 ? (
+                <div className="h-40 bg-gray-200 flex justify-center items-center rounded">
+                  <img src={unknownImg} alt="empty" className="w-10 h-10 opacity-50" />
+                </div>
+              ) : (
+                getLayout(allArchives, allArchives.length - 5, '/archive/all')
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* 세로 배치 */}
+            <div className="mb-6">
+              <div className="flex items-center space-x-2 mb-2 mt-6">
+                <h3 className="text-[16px] font-semibold">나의 아카이브</h3>
+                <span className="text-[16px] font-medium text-[#999999]">·</span>
+                <span className="text-[14px] font-medium text-[#999999]">{myArchives.length}</span>
+              </div>
+              <p className="text-sm text-gray-500 mt-1 mb-3">
+                당신과 함께 만들어간 추억들이에요!
+              </p>
+              {myArchives.length === 0 ? (
+                <div className="w-[50%] aspect-square overflow-hidden flex justify-center items-center">
+                  <img src={unknownImg} alt="empty" className="w-full h-full opacity-50" />
+                </div>
+              ) : (
+                getLayout(myArchives, myArchives.length - 5, '/archive/mine')
+              )}
+              <hr className="border-t border-[#CCCCCC] my-6" />
+            </div>
+
+            <div>
+              <div className="flex items-center space-x-2 mb-1">
+                <h3 className="text-[16px] font-semibold">댕궁동 아카이브</h3>
+                <span className="text-[16px] font-medium text-[#999999]">·</span>
+                <span className="text-[14px] font-medium text-[#999999]">{allArchives.length}</span>
+              </div>
+              <p className="text-sm text-gray-500 mt-1 mb-3">
+                반려인들이 댕궁동에서 남긴 추억들을 확인해보세요.
+              </p>
+              {allArchives.length === 0 ? (
+                <div className="w-full h-40 bg-gray-200 flex justify-center items-center rounded">
+                  <img src={unknownImg} alt="empty" className="w-10 h-10 opacity-50" />
+                </div>
+              ) : (
+                getLayout(allArchives, allArchives.length - 5, '/archive/all')
+              )}
+            </div>
+          </>
+        )}
+      </div>
 
       <MenuTabs isLoggedIn={!!localStorage.getItem('token')} onLoginClick={onLoginClick} />
     </div>
