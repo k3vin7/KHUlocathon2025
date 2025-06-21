@@ -275,6 +275,10 @@ export default function MapContainer({ showMyPage, setShowMyPage, userData, onLo
           place={selectedPlace}
           isExpanded={isExpanded}
           onToggleExpand={() => setIsExpanded(!isExpanded)}
+          onClose={() => {
+            setIsExpanded(false);
+            setSelectedPlace(null);
+          }}
           API_URL={API_URL}
         />
       )}
