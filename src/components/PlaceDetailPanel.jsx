@@ -40,7 +40,12 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
     } else if(!isExpanded && deltaY < -50){
       onToggleExpand();
     }else if(!isExpanded && deltaY>50){
-      onClose();
+      panelRef.current.style.transition = 'transform 0.3s ease';
+      panelRef.current.style.transform = 'translateY(100%)';
+      setTimeout(()=>{
+        onClose();  
+      }, 300);
+      
     }else{
       panelRef.current.style.transform = 'translateY(0)';
     }
@@ -182,15 +187,18 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
   return (
     <div
       ref={panelRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       className={`absolute bottom-0 left-0 w-full bg-white 
         rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.1)]
         transition-all duration-300 ease-in-out z-40
         ${isExpanded ? 'h-[60dvh]' : 'h-[25dvh] overflow-y-auto'}`}
     >
-      <div onClick={onToggleExpand} className="flex items-center justify-center h-[4dvh]">
+      <div 
+        onClick={onToggleExpand}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="flex items-center justify-center h-[4dvh]"
+      >
         <div className="w-[7.5dvw] h-[0.3dvh] bg-[#CCCCCC] rounded-full cursor-pointer" />
       </div>
 
