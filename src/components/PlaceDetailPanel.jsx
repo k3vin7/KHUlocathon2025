@@ -66,15 +66,55 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
     startY.current = e.touches[0].clientY;
   };
 
-  const handleTouchMove = (e) => {
-    if (!dragging.current) return;
-    e.preventDefault();
-    currentY.current = e.touches[0].clientY;
-    const deltaY = currentY.current - startY.current;
-    if (deltaY > 0) {
-      panelRef.current.style.transform = `translateY(${deltaY}px)`;
+  useEffect(() => {
+    const handleTouchMoveInternal = (e) => {
+      if (!dragging.current) return;
+
+      e.preventDefault(); // 이제 정상적으로 작동함
+      currentY.current = e.touches[0].clientY;
+      const deltaY = currentY.current - startY.current;
+      if (deltaY > 0) {
+        panelRef.current.style.transform = `translateY(${deltaY}px)`;
+      }
+    };
+
+    const node = panelRef.current;
+    if (node) {
+      node.addEventListener('touchmove', handleTouchMoveInternal, { passive: false });
     }
-  };
+
+    return () => {
+      if (node) {
+        node.removeEventListener('touchmove', handleTouchMoveInternal);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMoveInternal = (e) => {
+      if (!dragging.current) return;
+      e.preventDefault(); // ✅ 마우스 기본 동작 방지
+
+      currentY.current = e.clientY;
+      const deltaY = currentY.current - startY.current;
+      if (Math.abs(deltaY) > 5) isClick.current = false;
+      if (deltaY > 0) {
+        panelRef.current.style.transform = `translateY(${deltaY}px)`;
+      }
+    };
+
+    const panel = panelRef.current;
+    if (panel) {
+      panel.addEventListener('mousemove', handleMouseMoveInternal);
+    }
+
+    return () => {
+      if (panel) {
+        panel.removeEventListener('mousemove', handleMouseMoveInternal);
+      }
+    };
+  }, []);
+
 
   const handleTouchEnd = () => {
     dragging.current = false;
@@ -237,7 +277,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       fetchMyInfo();
     }, []);
 
-  const isWalkCourse = place.category === '산책코스';
+  const isWalkCourse = place.category === '산F책코스';
 
   return (
     <div
@@ -250,10 +290,8 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
       <div 
         onClick={onToggleExpand}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         className="flex items-center justify-center h-[4dvh]"
       >
