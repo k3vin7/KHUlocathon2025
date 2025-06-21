@@ -26,11 +26,12 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
 
   const handleMouseMove = (e) =>{
     if(!dragging.current) return;
+    e.preventDefault();
     currentY.current = e.clientY;
     const deltaY = currentY.current - startY.current;
     if(Math.abs(deltaY)>5) isClick.current = false;
     if(deltaY > 0){
-      panelRef.current.style.transform = `translateY(${{deltaY}}px)`;
+      panelRef.current.style.transform = `translateY(${deltaY}px)`;
     }
   };
 
@@ -67,6 +68,7 @@ export default function PlaceDetailPanel({ place, isExpanded, onClose, onToggleE
 
   const handleTouchMove = (e) => {
     if (!dragging.current) return;
+    e.preventDefault();
     currentY.current = e.touches[0].clientY;
     const deltaY = currentY.current - startY.current;
     if (deltaY > 0) {
